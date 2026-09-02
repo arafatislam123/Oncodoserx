@@ -1,0 +1,834 @@
+{
+  "Colorectal Cancer": {
+    "I": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "Surveillance",
+      "sample_count": 600
+    },
+    "II": {
+      "predicted_cycles_mode": 12,
+      "predicted_cycles_mean": 8.7,
+      "top_regimen": "FOLFOX",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 12,
+      "predicted_cycles_mean": 10.4,
+      "top_regimen": "FOLFOX",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 12,
+      "predicted_cycles_mean": 9.8,
+      "top_regimen": "FOLFOX + Cetuximab (RAS WT)",
+      "sample_count": 600
+    }
+  },
+  "Head & Neck Cancer": {
+    "I": {
+      "predicted_cycles_mode": 2,
+      "predicted_cycles_mean": 2.0,
+      "top_regimen": "Cisplatin+RT",
+      "sample_count": 294
+    },
+    "II": {
+      "predicted_cycles_mode": 2,
+      "predicted_cycles_mean": 1.9,
+      "top_regimen": "Cisplatin+RT",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 2,
+      "predicted_cycles_mean": 1.8,
+      "top_regimen": "Cisplatin+RT",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.5,
+      "top_regimen": "Carbo+5FU+Cetux",
+      "sample_count": 600
+    }
+  },
+  "Pancreatic Cancer": {
+    "I": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 8.0,
+      "top_regimen": "Gem+nabPac",
+      "sample_count": 450
+    },
+    "II": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 7.5,
+      "top_regimen": "Gem+nabPac",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 7.2,
+      "top_regimen": "Gem+nabPac",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 12,
+      "predicted_cycles_mean": 9.1,
+      "top_regimen": "FOLFIRINOX",
+      "sample_count": 600
+    }
+  },
+  "Bladder Cancer": {
+    "I": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.6,
+      "top_regimen": "Neoadj GemCis",
+      "sample_count": 600
+    },
+    "II": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.5,
+      "top_regimen": "Neoadj GemCis",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.3,
+      "top_regimen": "Neoadj GemCis",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "Gem+Cis",
+      "sample_count": 600
+    }
+  },
+  "Breast Cancer": {
+    "I": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 4.1,
+      "top_regimen": "TC (HR+/HER2- Stage I adjuvant)",
+      "sample_count": 600
+    },
+    "II": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 7.7,
+      "top_regimen": "AC-T (Dose-Dense, HR+/HER2- Stage II adjuvant)",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 7.4,
+      "top_regimen": "AC-T (HR+/HER2- Stage III adjuvant)",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.7,
+      "top_regimen": "CDK4/6 inhibitor + Endocrine Therapy (HR+ metastatic)",
+      "sample_count": 600
+    }
+  },
+  "Ovarian Cancer": {
+    "I": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.7,
+      "top_regimen": "Carbo+Pac+Bev",
+      "sample_count": 405
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.6,
+      "top_regimen": "Carbo+Pac+Bev",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.3,
+      "top_regimen": "Carbo+Pac+Bev",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "Carbo+Pac+Bev",
+      "sample_count": 600
+    }
+  },
+  "Endometrial Cancer": {
+    "I": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.9,
+      "top_regimen": "Carbo+Pac",
+      "sample_count": 600
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.5,
+      "top_regimen": "Carbo+Pac",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.2,
+      "top_regimen": "Carbo+Pac",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.6,
+      "top_regimen": "Carbo+Pac",
+      "sample_count": 556
+    }
+  },
+  "Multiple Myeloma": {
+    "I": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 8.0,
+      "top_regimen": "VRd",
+      "sample_count": 169
+    },
+    "II": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 7.5,
+      "top_regimen": "VRd",
+      "sample_count": 531
+    },
+    "III": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 7.3,
+      "top_regimen": "VRd",
+      "sample_count": 457
+    },
+    "IV": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 6.5,
+      "top_regimen": "VRd",
+      "sample_count": 591
+    }
+  },
+  "Liver Cancer (HCC)": {
+    "I": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.6,
+      "top_regimen": "Atezolizumab+Bev",
+      "sample_count": 359
+    },
+    "II": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 2.8,
+      "top_regimen": "Atezolizumab+Bev",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.9,
+      "top_regimen": "Atezolizumab+Bev",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.6,
+      "top_regimen": "Atezolizumab+Bev",
+      "sample_count": 600
+    }
+  },
+  "Lung Cancer (NSCLC)": {
+    "I": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 2.8,
+      "top_regimen": "Adj Carbo+Pac",
+      "sample_count": 600
+    },
+    "II": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 2.7,
+      "top_regimen": "Carbo+Pac",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.2,
+      "top_regimen": "Carbo+Pac+CRT",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 2.3,
+      "top_regimen": "Carbo+Pac+Pembro",
+      "sample_count": 600
+    }
+  },
+  "Melanoma": {
+    "I": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.6,
+      "top_regimen": "Adj Nivo",
+      "sample_count": 600
+    },
+    "II": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.5,
+      "top_regimen": "Adj Nivo",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.2,
+      "top_regimen": "Adj Nivo",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "Nivo+Ipi",
+      "sample_count": 600
+    }
+  },
+  "Prostate Cancer": {
+    "I": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "ADT",
+      "sample_count": 600
+    },
+    "II": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "ADT",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "ADT",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 10,
+      "predicted_cycles_mean": 7.5,
+      "top_regimen": "Docetaxel+Pred",
+      "sample_count": 600
+    }
+  },
+  "Non-Hodgkin Lymphoma": {
+    "I": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.8,
+      "top_regimen": "R-CHOP",
+      "sample_count": 600
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.6,
+      "top_regimen": "R-CHOP",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 7.1,
+      "top_regimen": "R-CHOP",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 6.4,
+      "top_regimen": "R-CHOP",
+      "sample_count": 600
+    }
+  },
+  "Leukemia (AML)": {
+    "I": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.7,
+      "top_regimen": "7+3 Induction+HiDAC",
+      "sample_count": 600
+    },
+    "II": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.6,
+      "top_regimen": "7+3 Induction+HiDAC",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.2,
+      "top_regimen": "7+3 Induction+HiDAC",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.0,
+      "top_regimen": "7+3 Induction+HiDAC",
+      "sample_count": 600
+    }
+  },
+  "Thyroid Cancer": {
+    "I": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.8,
+      "top_regimen": "Carboplatin+Paclitaxel",
+      "sample_count": 600
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.7,
+      "top_regimen": "Carboplatin+Paclitaxel",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.1,
+      "top_regimen": "Carboplatin+Paclitaxel",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "Carboplatin+Paclitaxel",
+      "sample_count": 199
+    }
+  },
+  "Kidney Cancer (RCC)": {
+    "I": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "Nivo+Ipi",
+      "sample_count": 600
+    },
+    "II": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "Nivo+Ipi",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "Nivo+Ipi",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "Nivo+Ipi",
+      "sample_count": 600
+    }
+  },
+  "Cervical Cancer": {
+    "I": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.8,
+      "top_regimen": "Cisplatin+RT",
+      "sample_count": 478
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.5,
+      "top_regimen": "Cisplatin+RT",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.1,
+      "top_regimen": "Cisplatin+RT",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "Pembro+Carbo+Pac",
+      "sample_count": 561
+    }
+  },
+  "Gastric Cancer": {
+    "I": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 8.0,
+      "top_regimen": "FLOT",
+      "sample_count": 385
+    },
+    "II": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 7.8,
+      "top_regimen": "FLOT",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 7.2,
+      "top_regimen": "FLOT",
+      "sample_count": 600
+    },
+    "IV": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 6.3,
+      "top_regimen": "FOLFOX+Nivo",
+      "sample_count": 600
+    }
+  },
+  "Lung Cancer (SCLC)": {
+    "I": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.5,
+      "top_regimen": "EP+CRT",
+      "sample_count": 188
+    },
+    "II": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.6,
+      "top_regimen": "EP+CRT",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.3,
+      "top_regimen": "EP+CRT",
+      "sample_count": 592
+    },
+    "IV": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 2.9,
+      "top_regimen": "Atezo+Carbo+Etop",
+      "sample_count": 600
+    }
+  },
+  "Leukemia (ALL)": {
+    "I": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 2.3,
+      "top_regimen": "Hyper-CVAD",
+      "sample_count": 181
+    },
+    "II": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 2.2,
+      "top_regimen": "Hyper-CVAD",
+      "sample_count": 451
+    },
+    "III": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 5.4,
+      "top_regimen": "Hyper-CVAD",
+      "sample_count": 249
+    },
+    "IV": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 4.4,
+      "top_regimen": "Hyper-CVAD",
+      "sample_count": 228
+    }
+  },
+  "Hodgkin Lymphoma": {
+    "I": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.6,
+      "top_regimen": "ABVD",
+      "sample_count": 246
+    },
+    "II": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.5,
+      "top_regimen": "ABVD",
+      "sample_count": 600
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "BV-AVD",
+      "sample_count": 424
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.9,
+      "top_regimen": "BV-AVD",
+      "sample_count": 493
+    }
+  },
+  "Esophageal Cancer": {
+    "I": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.9,
+      "top_regimen": "Carboplatin+Paclitaxel",
+      "sample_count": 83
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.7,
+      "top_regimen": "Carboplatin+Paclitaxel",
+      "sample_count": 344
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.3,
+      "top_regimen": "Carboplatin+Paclitaxel",
+      "sample_count": 238
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.7,
+      "top_regimen": "Carboplatin+Paclitaxel",
+      "sample_count": 427
+    }
+  },
+  "Testicular Cancer": {
+    "I": {
+      "predicted_cycles_mode": 2,
+      "predicted_cycles_mean": 2.1,
+      "top_regimen": "BEP x3",
+      "sample_count": 216
+    },
+    "II": {
+      "predicted_cycles_mode": 2,
+      "predicted_cycles_mean": 1.9,
+      "top_regimen": "BEP x3",
+      "sample_count": 506
+    },
+    "III": {
+      "predicted_cycles_mode": 2,
+      "predicted_cycles_mean": 1.8,
+      "top_regimen": "BEP x3",
+      "sample_count": 289
+    },
+    "IV": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.1,
+      "top_regimen": "BEP x4",
+      "sample_count": 199
+    }
+  },
+  "Brain Cancer": {
+    "I": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.8,
+      "top_regimen": "Surgery ± RT (Low-grade, localized)",
+      "sample_count": 320
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.5,
+      "top_regimen": "RT + Temozolomide (Stupp Protocol)",
+      "sample_count": 480
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.2,
+      "top_regimen": "RT + Temozolomide (Stupp Protocol)",
+      "sample_count": 520
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "RT + Temozolomide + Bevacizumab (Recurrent/GBM)",
+      "sample_count": 600
+    }
+  },
+  "Brain Tumor": {
+    "I": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.8,
+      "top_regimen": "Surgery ± RT (Low-grade, localized)",
+      "sample_count": 320
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.5,
+      "top_regimen": "RT + Temozolomide (Stupp Protocol)",
+      "sample_count": 480
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.2,
+      "top_regimen": "RT + Temozolomide (Stupp Protocol)",
+      "sample_count": 520
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "RT + Temozolomide + Bevacizumab (Recurrent/GBM)",
+      "sample_count": 600
+    }
+  },
+  "Glioblastoma (GBM)": {
+    "I": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.8,
+      "top_regimen": "Surgery + RT + Concomitant TMZ (Stupp Protocol)",
+      "sample_count": 280
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.5,
+      "top_regimen": "RT + Temozolomide (Stupp Protocol)",
+      "sample_count": 450
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.2,
+      "top_regimen": "RT + Temozolomide (Stupp Protocol)",
+      "sample_count": 520
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "Bevacizumab + Lomustine (Recurrent GBM)",
+      "sample_count": 600
+    }
+  },
+  "Lower Grade Glioma": {
+    "I": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.8,
+      "top_regimen": "Surgery ± Observation (Low-risk Grade 2)",
+      "sample_count": 240
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.5,
+      "top_regimen": "RT + PCV or TMZ (High-risk Grade 2 — RTOG 9802)",
+      "sample_count": 380
+    },
+    "III": {
+      "predicted_cycles_mode": 12,
+      "predicted_cycles_mean": 10.2,
+      "top_regimen": "RT + Adjuvant TMZ ×12 (CATNON — IDH-mutant Grade 3)",
+      "sample_count": 420
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "RT + TMZ (Progressive LGG → GBM-like treatment)",
+      "sample_count": 300
+    }
+  },
+  "Oligodendroglioma": {
+    "I": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.8,
+      "top_regimen": "Surgery + RT + Adjuvant PCV (1p/19q co-deleted)",
+      "sample_count": 180
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.5,
+      "top_regimen": "RT + PCV (EORTC 26951 / RTOG 9402)",
+      "sample_count": 320
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.2,
+      "top_regimen": "RT + PCV (1p/19q co-deleted Oligodendroglioma)",
+      "sample_count": 380
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "PCV + Bevacizumab (Recurrent Oligodendroglioma)",
+      "sample_count": 200
+    }
+  },
+  "Meningioma": {
+    "I": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "Surgery alone (Grade 1 — complete resection)",
+      "sample_count": 450
+    },
+    "II": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "Surgery + RT (Grade 2 — subtotal resection)",
+      "sample_count": 280
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.5,
+      "top_regimen": "RT + Adjuvant Chemotherapy (Anaplastic Meningioma)",
+      "sample_count": 150
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "RT + Systemic Therapy (Metastatic/Recurrent)",
+      "sample_count": 120
+    }
+  },
+  "Brain Metastasis": {
+    "I": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "SRS (Stereotactic Radiosurgery) ± Systemic Therapy",
+      "sample_count": 300
+    },
+    "II": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.5,
+      "top_regimen": "SRS + Systemic Therapy (Limited brain mets)",
+      "sample_count": 450
+    },
+    "III": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 3.2,
+      "top_regimen": "WBRT or SRS + Systemic Therapy",
+      "sample_count": 500
+    },
+    "IV": {
+      "predicted_cycles_mode": 4,
+      "predicted_cycles_mean": 2.8,
+      "top_regimen": "Systemic Therapy + CNS-penetrant agents (Multiple mets)",
+      "sample_count": 600
+    }
+  },
+  "Medulloblastoma": {
+    "I": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 7.5,
+      "top_regimen": "Craniospinal RT + Chemotherapy (CCSG 9921 — Average Risk)",
+      "sample_count": 120
+    },
+    "II": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 7.2,
+      "top_regimen": "Craniospinal RT + Chemotherapy (CCSG 9921)",
+      "sample_count": 200
+    },
+    "III": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 6.8,
+      "top_regimen": "High-dose Chemotherapy + Craniospinal RT (High-risk)",
+      "sample_count": 250
+    },
+    "IV": {
+      "predicted_cycles_mode": 8,
+      "predicted_cycles_mean": 6.5,
+      "top_regimen": "High-dose Chemotherapy + RT + Maintenance (Metastatic)",
+      "sample_count": 180
+    }
+  },
+  "Ependymoma": {
+    "I": {
+      "predicted_cycles_mode": 0,
+      "predicted_cycles_mean": 0.0,
+      "top_regimen": "Surgery + RT (Localized, complete resection)",
+      "sample_count": 100
+    },
+    "II": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.5,
+      "top_regimen": "RT + Chemotherapy (Subtotal resection or high-grade)",
+      "sample_count": 150
+    },
+    "III": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 5.2,
+      "top_regimen": "RT + Chemotherapy (Anaplastic Ependymoma)",
+      "sample_count": 180
+    },
+    "IV": {
+      "predicted_cycles_mode": 6,
+      "predicted_cycles_mean": 4.8,
+      "top_regimen": "Systemic Therapy + RT (Recurrent/Metastatic)",
+      "sample_count": 100
+    }
+  }
+}
