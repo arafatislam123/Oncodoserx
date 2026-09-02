@@ -22,9 +22,8 @@ AI-powered chemotherapy dose calculation and oncology report extraction platform
 - pdf-parse for PDF text extraction
 
 ### Frontend
-- Vanilla JavaScript
-- Modern CSS with dark medical theme
-- Responsive design
+- Next.js / React (TypeScript, App Router, Tailwind CSS)
+- Talks to the Express API via `/api/*` (proxied — see `frontend/next.config.ts`)
 
 ### AI/ML
 - Random Forest model (120k patient dataset)
@@ -55,10 +54,10 @@ OncoDoseRx/
 │   ├── model_rules.json      # ML model rules
 │   ├── dataset_stats.json    # Dataset statistics
 │   └── feature_importance.json
-├── public/
-│   ├── index.html            # Main HTML
-│   ├── app.js                # Frontend JavaScript
-│   └── style.css             # Styles
+├── frontend/                 # Next.js/React UI (see below)
+│   ├── src/app/               # Pages (upload, multi-upload, patients, bsa, dashboard)
+│   ├── src/components/        # Shared analysis-result rendering
+│   └── src/lib/                # API client, slot definitions, treatment-plan generator
 ├── database/
 │   └── schema.sql            # PostgreSQL schema
 └── scripts/
@@ -100,22 +99,40 @@ OncoDoseRx/
    # Edit .env with your database credentials
    ```
 
-5. **Start the server**
+5. **Start the API server**
    ```bash
    npm start
    ```
+   This serves the API on `http://localhost:3000` — it has no UI of its
+   own.
 
-6. **Open in browser**
+6. **Start the frontend** (in a second terminal)
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
    ```
-   http://localhost:3000
+   Runs on `http://localhost:3001` and proxies all `/api/*` calls to the
+   Express server on port 3000 (see `frontend/next.config.ts`) — the API
+   server must already be running before you start this.
+
+7. **Open in browser**
    ```
+   http://localhost:3001
+   ```
+
+The field name the upload form sends (`report`) and the JSON response
+shapes in `frontend/src/lib/api.ts` are matched directly to `server.js`'s
+routes — if you add or change an API route in `server.js`, update
+`frontend/src/lib/api.ts` (and, for slot/pathway changes, `frontend/src/lib/slots.ts`) to match.
 
 ## API Endpoints
 
 ### Analysis
 - `POST /api/analyze` - Single file upload and analysis
-- `POST /api/analyze-multi` - Multi-file upload and analysis
-- `POST /api/analyze-text` - Analyze pasted text
+- `POST /api/analyze-multi` - Multi-file upload and analysis (also accepts pasted text)
+- `POST /api/analyze-text` - Analyze pasted text only
+- `POST /api/analyze-breast-secondary` - Analyze a breast-cancer conditional report (genomic risk score, BRCA, nodal staging)
 - `POST /api/upload-and-analyze` - Upload, analyze, and save to database
 
 ### Patients
