@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f7f9;
+  --foreground: #1a1d23;
 }
 
 @theme inline {
@@ -10,6 +10,19 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Brand scale — a deep clinical teal-navy, distinct from stock Tailwind blue */
+  --color-brand-50: #f0f6f8;
+  --color-brand-100: #dbe9ee;
+  --color-brand-200: #b8d3dd;
+  --color-brand-300: #8bb5c4;
+  --color-brand-400: #5a92a7;
+  --color-brand-500: #3d768c;
+  --color-brand-600: #2c5f74;
+  --color-brand-700: #244c5e;
+  --color-brand-800: #1f3f4e;
+  --color-brand-900: #1b3541;
+  --color-brand-950: #0f2029;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,25 +33,34 @@
 }
 
 body {
-  background: #f8fafc;
+  background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-slate-200 bg-white p-5 shadow-sm;
+    @apply rounded-xl border border-slate-200/80 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)];
   }
   .btn-primary {
-    @apply rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center gap-1.5 rounded-md bg-brand-700 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-secondary {
-    @apply rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50;
+    @apply inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900;
   }
   .field-label {
-    @apply block text-sm font-medium text-slate-700;
+    @apply block text-[13px] font-medium text-slate-600;
   }
   .field-input {
-    @apply mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500;
+    @apply mt-1.5 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100;
+  }
+  .section-label {
+    @apply text-[11px] font-semibold uppercase tracking-wider text-slate-400;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold;
   }
 }

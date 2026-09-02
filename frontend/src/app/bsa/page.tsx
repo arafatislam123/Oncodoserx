@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Ruler } from "lucide-react";
 import { api, ApiError, type BSAResult } from "@/lib/api";
 
 const FORMULAS = ["Mosteller", "Du Bois", "Haycock", "Boyd", "Gehan & George"];
@@ -31,10 +32,11 @@ export default function BSAPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">📐 BSA Calculator</h1>
-        <p className="mt-1 text-slate-600">
-          Calculate Body Surface Area using multiple clinical formulas.
-        </p>
+        <span className="section-label">Calculations</span>
+        <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold tracking-tight text-slate-900">
+          <Ruler size={20} strokeWidth={2} className="text-brand-700" /> BSA Calculator
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">Calculate Body Surface Area using multiple clinical formulas.</p>
       </div>
 
       <form onSubmit={onSubmit} className="card grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -65,12 +67,8 @@ export default function BSAPage() {
           />
         </div>
         <div>
-          <label className="field-label">Preferred Formula</label>
-          <select
-            className="field-input"
-            value={formula}
-            onChange={(e) => setFormula(e.target.value)}
-          >
+          <label className="field-label">Preferred formula</label>
+          <select className="field-input" value={formula} onChange={(e) => setFormula(e.target.value)}>
             {FORMULAS.map((f) => (
               <option key={f} value={f}>
                 {f}
@@ -86,17 +84,15 @@ export default function BSAPage() {
       </form>
 
       {err && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          ⚠️ {err}
-        </div>
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{err}</div>
       )}
 
       {result && (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           <div className="card">
-            <h2 className="text-lg font-semibold text-slate-900">Result</h2>
-            <dl className="mt-3 space-y-2 text-sm">
-              <Row k="Preferred Formula" v={result.preferred_formula} />
+            <span className="section-label">Result</span>
+            <dl className="mt-3 space-y-1.5 text-sm">
+              <Row k="Preferred formula" v={result.preferred_formula} />
               <Row k="BSA" v={`${result.preferred_bsa} m²`} />
               <Row k="Calculation" v={result.preferred_calculation} />
               <Row k="Average BSA (all formulas)" v={`${result.average_bsa} m²`} />
@@ -105,12 +101,12 @@ export default function BSAPage() {
             </dl>
           </div>
           <div className="card">
-            <h2 className="text-lg font-semibold text-slate-900">All Formulas</h2>
-            <ul className="mt-3 divide-y divide-slate-100 rounded-lg border border-slate-200">
+            <span className="section-label">All Formulas</span>
+            <ul className="mt-3 divide-y divide-slate-100">
               {Object.entries(result.all_formulas).map(([name, f]) => (
-                <li key={name} className="flex items-center justify-between px-3 py-2 text-sm">
-                  <span className="font-medium text-slate-800">{name}</span>
-                  <span className="text-slate-600">{f.bsa} m²</span>
+                <li key={name} className="flex items-center justify-between py-2 text-sm">
+                  <span className="font-medium text-slate-700">{name}</span>
+                  <span className="tabular-nums text-slate-500">{f.bsa} m²</span>
                 </li>
               ))}
             </ul>
@@ -123,8 +119,8 @@ export default function BSAPage() {
 
 function Row({ k, v }: { k: string; v: string | number }) {
   return (
-    <div className="flex justify-between gap-4 rounded-md bg-slate-50 px-3 py-2">
-      <dt className="text-slate-600">{k}</dt>
+    <div className="flex justify-between gap-4 py-1 text-sm">
+      <dt className="text-slate-500">{k}</dt>
       <dd className="text-right font-medium text-slate-900">{v}</dd>
     </div>
   );

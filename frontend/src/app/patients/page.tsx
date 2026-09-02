@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Plus, Trash2, Users } from "lucide-react";
 import { api, ApiError, type Patient } from "@/lib/api";
 
 export default function PatientsPage() {
@@ -31,11 +32,14 @@ export default function PatientsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">👤 Patients</h1>
-          <p className="mt-1 text-slate-600">Manage patient records.</p>
+          <span className="section-label">Records</span>
+          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold tracking-tight text-slate-900">
+            <Users size={20} strokeWidth={2} className="text-brand-700" /> Patients
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">Manage patient records.</p>
         </div>
         <button className="btn-primary" onClick={() => setShowForm((s) => !s)}>
-          {showForm ? "Cancel" : "+ New Patient"}
+          <Plus size={14} /> {showForm ? "Cancel" : "New Patient"}
         </button>
       </div>
 
@@ -49,50 +53,49 @@ export default function PatientsPage() {
       )}
 
       {err && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          ⚠️ {err}
-        </div>
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{err}</div>
       )}
 
       {loading ? (
-        <p className="text-slate-500">Loading…</p>
+        <p className="text-sm text-slate-400">Loading…</p>
       ) : patients.length === 0 ? (
-        <p className="text-slate-500">No patients yet.</p>
+        <div className="card text-center text-sm text-slate-400">No patients yet.</div>
       ) : (
         <div className="card overflow-x-auto p-0">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-left text-slate-600">
+            <thead className="border-b border-slate-100 text-left">
               <tr>
-                <th className="px-4 py-3 font-medium">Name</th>
-                <th className="px-4 py-3 font-medium">DOB</th>
-                <th className="px-4 py-3 font-medium">Gender</th>
-                <th className="px-4 py-3 font-medium">Height / Weight</th>
-                <th className="px-4 py-3 font-medium" />
+                <th className="section-label px-4 py-2.5 font-semibold">Name</th>
+                <th className="section-label px-4 py-2.5 font-semibold">DOB</th>
+                <th className="section-label px-4 py-2.5 font-semibold">Gender</th>
+                <th className="section-label px-4 py-2.5 font-semibold">Height / Weight</th>
+                <th className="px-4 py-2.5" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {patients.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3">
-                    <Link href={`/patients/${p.id}`} className="font-medium text-blue-600 hover:underline">
+                <tr key={p.id} className="group hover:bg-slate-50/80">
+                  <td className="px-4 py-2.5">
+                    <Link href={`/patients/${p.id}`} className="font-medium text-brand-700 hover:underline">
                       {p.first_name} {p.last_name}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{p.date_of_birth}</td>
-                  <td className="px-4 py-3 capitalize text-slate-600">{p.gender}</td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-4 py-2.5 text-slate-500">{p.date_of_birth}</td>
+                  <td className="px-4 py-2.5 capitalize text-slate-500">{p.gender}</td>
+                  <td className="px-4 py-2.5 text-slate-500">
                     {p.height_cm ? `${p.height_cm} cm` : "—"} / {p.weight_kg ? `${p.weight_kg} kg` : "—"}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-2.5 text-right">
                     <button
-                      className="text-xs font-medium text-red-600 hover:underline"
+                      className="rounded-md p-1.5 text-slate-300 opacity-0 transition hover:bg-red-50 hover:text-red-600 group-hover:opacity-100"
+                      title="Delete patient"
                       onClick={async () => {
                         if (!confirm("Are you sure you want to delete this patient? This action cannot be undone.")) return;
                         await api.deletePatient(p.id);
                         load();
                       }}
                     >
-                      Delete
+                      <Trash2 size={14} />
                     </button>
                   </td>
                 </tr>
@@ -188,7 +191,7 @@ function NewPatientForm({ onCreated }: { onCreated: () => void }) {
       </div>
       {err && (
         <div className="sm:col-span-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          ⚠️ {err}
+          {err}
         </div>
       )}
       <div className="sm:col-span-3">

@@ -2,6 +2,20 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
+  AlertTriangle,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  Dna,
+  FileImage,
+  FileText,
+  FolderOpen,
+  Package,
+  Sparkles,
+  Target,
+  X,
+} from "lucide-react";
+import {
   api,
   ApiError,
   type AnalysisResult,
@@ -10,11 +24,11 @@ import {
   type ReportRequirement,
   type SecondaryAnalysis,
 } from "@/lib/api";
-import { AnalysisView } from "@/components/AnalysisView";
+import { AnalysisView, Badge, CardHeading } from "@/components/AnalysisView";
+import { SlotTypeIcon } from "@/lib/icons";
 import {
   ALLOWED_EXTS,
   DEFAULT_SLOTS,
-  SLOT_ICONS,
   SLOT_NAMES,
   buildDynamicSlots,
   fmtBytes,
@@ -138,8 +152,11 @@ export default function MultiUploadPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">🗂️ Multi-Report Intake</h1>
-        <p className="mt-1 text-slate-600">
+        <span className="section-label">Analysis</span>
+        <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold tracking-tight text-slate-900">
+          <FolderOpen size={20} strokeWidth={2} className="text-brand-700" /> Multi-Report Intake
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
           Select a cancer type, then upload multiple reports (histopathology, imaging, labs, molecular panels) for
           a combined analysis.
         </p>
@@ -163,7 +180,7 @@ export default function MultiUploadPage() {
       {selectedType && (
         <>
           <div className="card">
-            <h2 className="text-lg font-semibold text-slate-900">Report Slots</h2>
+            <CardHeading icon={FileText}>Report Slots</CardHeading>
             <p className="mt-1 text-sm text-slate-500">
               {filledCount} / {slots.length} filled via individual slots
               {bulkQueue.length > 0 ? ` · ${bulkQueue.length} in bulk queue` : ""}
@@ -183,7 +200,7 @@ export default function MultiUploadPage() {
           <BulkUpload queue={bulkQueue} setQueue={setBulkQueue} slots={slots} onAddFiles={addBulkFiles} />
 
           <div className="card">
-            <h2 className="text-lg font-semibold text-slate-900">Or Paste Report Text</h2>
+            <CardHeading icon={FileText}>Or Paste Report Text</CardHeading>
             <textarea
               className="field-input mt-2 h-24 resize-y"
               placeholder="Paste additional report text here (optional)…"
@@ -201,7 +218,7 @@ export default function MultiUploadPage() {
       )}
 
       {err && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">⚠️ {err}</div>
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{err}</div>
       )}
 
       {result && (
@@ -247,9 +264,14 @@ function CancerTypeSelector({
   if (selectedLabel) {
     return (
       <div className="card flex items-center justify-between">
-        <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Analyzing for</div>
-          <div className="text-lg font-medium text-slate-900">🎯 {selectedLabel}</div>
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-brand-50 text-brand-700">
+            <Target size={16} strokeWidth={2} />
+          </span>
+          <div>
+            <div className="section-label">Analyzing for</div>
+            <div className="text-[15px] font-medium text-slate-900">{selectedLabel}</div>
+          </div>
         </div>
         <button className="btn-secondary" onClick={onClear}>Change</button>
       </div>
@@ -258,14 +280,17 @@ function CancerTypeSelector({
 
   return (
     <div className="card relative">
-      <label className="field-label">Cancer Type</label>
-      <input
-        className="field-input"
-        placeholder="Search cancer type…"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        onFocus={() => setOpen(true)}
-      />
+      <label className="field-label">Cancer type</label>
+      <div className="relative mt-1.5">
+        <input
+          className="field-input mt-0 pr-8"
+          placeholder="Search cancer type…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onFocus={() => setOpen(true)}
+        />
+        <ChevronDown size={15} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+      </div>
       {open && (
         <div className="absolute left-5 right-5 z-10 mt-1 max-h-72 overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg">
           {filtered.length === 0 ? (
@@ -295,32 +320,36 @@ function CancerTypeSelector({
 function SlotUpload({ slot, file, onFile }: { slot: SlotDef; file: File | null; onFile: (f: File | null) => void }) {
   const [drag, setDrag] = useState(false);
   const badge = slot.isConditional
-    ? { text: "Conditional", cls: "bg-blue-100 text-blue-700" }
+    ? { text: "Conditional", cls: "bg-brand-50 text-brand-700" }
     : slot.required
-    ? { text: "Required", cls: "bg-red-100 text-red-700" }
+    ? { text: "Required", cls: "bg-red-50 text-red-700" }
     : slot.reason
-    ? { text: "Important", cls: "bg-amber-100 text-amber-700" }
-    : { text: "Optional", cls: "bg-slate-100 text-slate-600" };
+    ? { text: "Important", cls: "bg-amber-50 text-amber-700" }
+    : { text: "Optional", cls: "bg-slate-100 text-slate-500" };
 
   return (
-    <div className="rounded-xl border border-slate-200">
+    <div className="rounded-lg border border-slate-200">
       <div className="flex items-center gap-3 px-4 py-3">
-        <span className="text-xl">{slot.icon}</span>
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-slate-50 text-slate-400">
+          <SlotTypeIcon slotId={slot.id} size={15} strokeWidth={2} />
+        </span>
         <div className="flex-1">
-          <div className="text-sm font-medium text-slate-900">{slot.title}</div>
-          <div className="text-xs text-slate-500">{slot.desc}</div>
+          <div className="text-[13px] font-medium text-slate-900">{slot.title}</div>
+          <div className="text-[12px] text-slate-400">{slot.desc}</div>
         </div>
-        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${badge.cls}`}>{badge.text}</span>
+        <span className={`badge ${badge.cls}`}>{badge.text}</span>
       </div>
       <div className="px-4 pb-4">
         {file ? (
           <div className="flex items-center gap-3 rounded-lg bg-slate-50 px-3 py-2 text-sm">
-            <span>{isImg(file) ? "🖼️" : "📄"}</span>
+            {isImg(file) ? <FileImage size={15} className="shrink-0 text-slate-400" /> : <FileText size={15} className="shrink-0 text-slate-400" />}
             <div className="flex-1">
               <div className="font-medium text-slate-800">{file.name}</div>
-              <div className="text-xs text-slate-500">{fmtBytes(file.size)}{isImg(file) ? " · OCR" : ""}</div>
+              <div className="text-[12px] text-slate-400">{fmtBytes(file.size)}{isImg(file) ? " · OCR" : ""}</div>
             </div>
-            <button className="text-slate-400 hover:text-red-600" onClick={() => onFile(null)}>✕</button>
+            <button className="text-slate-300 hover:text-red-600" onClick={() => onFile(null)}>
+              <X size={14} />
+            </button>
           </div>
         ) : (
           <label
@@ -333,11 +362,11 @@ function SlotUpload({ slot, file, onFile }: { slot: SlotDef; file: File | null; 
               if (f) onFile(f);
             }}
             className={`flex cursor-pointer flex-col items-center rounded-lg border-2 border-dashed py-4 text-center ${
-              drag ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-slate-300"
+              drag ? "border-brand-400 bg-brand-50/40" : "border-slate-200 hover:border-slate-300"
             }`}
           >
-            <span className="text-xl">📄</span>
-            <span className="mt-1 text-xs text-slate-500">Drop file or click to upload</span>
+            <FileText size={17} strokeWidth={1.5} className="text-slate-300" />
+            <span className="mt-1 text-[12px] text-slate-500">Drop file or click to upload</span>
             <span className="text-[11px] text-slate-400">PDF · TXT · PNG · JPG · WEBP</span>
             <input
               type="file"
@@ -367,7 +396,7 @@ function BulkUpload({
 
   return (
     <div className="card">
-      <h2 className="text-lg font-semibold text-slate-900">Bulk Upload</h2>
+      <CardHeading icon={Package}>Bulk Upload</CardHeading>
       <p className="mt-1 text-sm text-slate-500">
         Drop several files at once — each is auto-matched to a slot by filename; reassign any that guess wrong.
       </p>
@@ -379,12 +408,12 @@ function BulkUpload({
           setDrag(false);
           if (e.dataTransfer.files.length) onAddFiles(e.dataTransfer.files);
         }}
-        className={`mt-3 flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed p-6 text-center ${
-          drag ? "border-blue-500 bg-blue-50" : "border-slate-300 hover:border-slate-400"
+        className={`mt-3 flex cursor-pointer flex-col items-center rounded-lg border-2 border-dashed p-6 text-center ${
+          drag ? "border-brand-400 bg-brand-50/40" : "border-slate-200 hover:border-slate-300"
         }`}
       >
-        <span className="text-3xl">📦</span>
-        <span className="mt-1 text-sm text-slate-600">Drop multiple files here, or click to browse</span>
+        <Package size={24} strokeWidth={1.5} className="text-slate-300" />
+        <span className="mt-1.5 text-[13px] text-slate-500">Drop multiple files here, or click to browse</span>
         <input
           type="file"
           multiple
@@ -397,18 +426,19 @@ function BulkUpload({
       {queue.length > 0 && (
         <div className="mt-4 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-700">{queue.length} file{queue.length > 1 ? "s" : ""} queued</span>
-            <button className="text-xs text-slate-500 hover:text-red-600" onClick={() => setQueue([])}>Clear all</button>
+            <span className="text-[13px] font-medium text-slate-600">{queue.length} file{queue.length > 1 ? "s" : ""} queued</span>
+            <button className="text-[12px] text-slate-400 hover:text-red-600" onClick={() => setQueue([])}>Clear all</button>
           </div>
           {queue.map((item, idx) => (
             <div key={idx} className="flex items-center gap-3 rounded-lg bg-slate-50 px-3 py-2 text-sm">
-              <span>{isImg(item.file) ? "🖼️" : "📄"}</span>
+              {isImg(item.file) ? <FileImage size={15} className="shrink-0 text-slate-400" /> : <FileText size={15} className="shrink-0 text-slate-400" />}
               <div className="flex-1">
                 <div className="font-medium text-slate-800">{item.file.name}</div>
-                <div className="text-xs text-slate-500">{fmtBytes(item.file.size)}</div>
+                <div className="text-[12px] text-slate-400">{fmtBytes(item.file.size)}</div>
               </div>
-              <span className={`text-xs ${item.assignedSlot ? "text-green-700" : "text-amber-700"}`}>
-                {item.assignedSlot ? `${SLOT_ICONS[item.assignedSlot] || "📄"} ${SLOT_NAMES[item.assignedSlot] || item.assignedSlot}` : "❓ Unrecognised"}
+              <span className={`flex items-center gap-1 text-[12px] ${item.assignedSlot ? "text-emerald-700" : "text-amber-700"}`}>
+                {item.assignedSlot ? <Check size={12} /> : <AlertTriangle size={12} />}
+                {item.assignedSlot ? SLOT_NAMES[item.assignedSlot] || item.assignedSlot : "Unrecognised"}
               </span>
               <select
                 className="rounded-md border border-slate-200 px-2 py-1 text-xs"
@@ -420,14 +450,14 @@ function BulkUpload({
               >
                 <option value="">— assign to slot —</option>
                 {slots.map((s) => (
-                  <option key={s.id} value={s.id}>{SLOT_ICONS[s.id]} {SLOT_NAMES[s.id] || s.title}</option>
+                  <option key={s.id} value={s.id}>{SLOT_NAMES[s.id] || s.title}</option>
                 ))}
               </select>
               <button
-                className="text-slate-400 hover:text-red-600"
+                className="text-slate-300 hover:text-red-600"
                 onClick={() => setQueue((prev) => prev.filter((_, i) => i !== idx))}
               >
-                ✕
+                <X size={14} />
               </button>
             </div>
           ))}
@@ -498,49 +528,51 @@ function BreastConditionalWorkflow({
   }
 
   return (
-    <div className="card border-2 border-blue-200 bg-blue-50/30">
+    <div className="card border-2 border-brand-200 bg-brand-50/20">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-900">🎯 Breast Cancer — Additional Reports Recommended</h2>
-        <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-800">
-          {recommended.length} report{recommended.length > 1 ? "s" : ""} needed
-        </span>
+        <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-900">
+          <Target size={16} className="text-brand-700" /> Breast Cancer — Additional Reports Recommended
+        </h2>
+        <Badge color="blue">{recommended.length} needed</Badge>
       </div>
-      <p className="mt-2 text-sm text-slate-600">
+      <p className="mt-2 text-sm text-slate-500">
         Based on the primary analysis, the following additional reports are recommended to refine the chemotherapy
         plan:
       </p>
 
       <div className="mt-4 space-y-3">
         {recommended.map((r, i) => (
-          <div key={r.id} className="rounded-xl border border-slate-200 bg-white p-3">
+          <div key={r.id} className="rounded-lg border border-slate-200 bg-white p-3">
             <div className="flex items-center gap-3">
-              <span className="text-xl">{r.icon}</span>
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-slate-50 text-slate-400">
+                <SlotTypeIcon slotId={r.id} size={15} strokeWidth={2} />
+              </span>
               <div className="flex-1">
-                <div className="text-sm font-medium text-slate-900">{r.name}</div>
-                <div className="text-xs text-slate-500">{r.reasonOverride}</div>
+                <div className="text-[13px] font-medium text-slate-900">{r.name}</div>
+                <div className="text-[12px] text-slate-400">{r.reasonOverride}</div>
               </div>
-              <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${i === 0 ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-600"}`}>
+              <span className={`badge ${i === 0 ? "bg-brand-50 text-brand-700" : "bg-slate-100 text-slate-500"}`}>
                 {i === 0 ? "Primary" : "Recommended"}
               </span>
             </div>
             <div className="mt-2">
               {files[r.id] ? (
                 <div className="flex items-center gap-3 rounded-lg bg-slate-50 px-3 py-2 text-sm">
-                  <span>{isImg(files[r.id]) ? "🖼️" : "📄"}</span>
+                  {isImg(files[r.id]) ? <FileImage size={15} className="shrink-0 text-slate-400" /> : <FileText size={15} className="shrink-0 text-slate-400" />}
                   <div className="flex-1">
                     <div className="font-medium text-slate-800">{files[r.id].name}</div>
-                    <div className="text-xs text-slate-500">{fmtBytes(files[r.id].size)}</div>
+                    <div className="text-[12px] text-slate-400">{fmtBytes(files[r.id].size)}</div>
                   </div>
                   <button
-                    className="text-slate-400 hover:text-red-600"
+                    className="text-slate-300 hover:text-red-600"
                     onClick={() => setFiles((prev) => { const n = { ...prev }; delete n[r.id]; return n; })}
                   >
-                    ✕
+                    <X size={14} />
                   </button>
                 </div>
               ) : (
                 <label className="flex cursor-pointer flex-col items-center rounded-lg border-2 border-dashed border-slate-200 py-3 text-center hover:border-slate-300">
-                  <span className="text-xs text-slate-500">Drop file or click to upload</span>
+                  <span className="text-[12px] text-slate-500">Drop file or click to upload</span>
                   <span className="text-[11px] text-slate-400">PDF · TXT · PNG · JPG · WEBP</span>
                   <input
                     type="file"
@@ -562,7 +594,7 @@ function BreastConditionalWorkflow({
         {loading ? "Analyzing conditional reports…" : "Analyze Conditional Reports"}
       </button>
 
-      {err && <p className="mt-2 text-sm text-red-700">⚠️ {err}</p>}
+      {err && <p className="mt-2 text-sm text-red-700">{err}</p>}
 
       {results && <ConditionalResultsView results={results} />}
     </div>
@@ -571,27 +603,27 @@ function BreastConditionalWorkflow({
 
 function ConditionalResultsView({ results }: { results: SecondaryAnalysis[] }) {
   return (
-    <div className="mt-4 rounded-xl border-2 border-green-200 bg-green-50/40 p-4">
+    <div className="mt-4 rounded-lg border-2 border-emerald-200 bg-emerald-50/30 p-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-slate-900">📋 Conditional Reports Analysis</h3>
-        <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-800">
-          {results.length} report{results.length > 1 ? "s" : ""} analyzed
-        </span>
+        <h3 className="flex items-center gap-2 text-[14px] font-semibold text-slate-900">
+          <Sparkles size={15} className="text-emerald-600" /> Conditional Reports Analysis
+        </h3>
+        <Badge color="green">{results.length} analyzed</Badge>
       </div>
       <div className="mt-3 space-y-3">
         {results.map((a, i) => (
           <div key={i} className="rounded-lg bg-white p-3">
-            <div className="flex items-center gap-2 font-medium text-slate-900">
-              <span>{SLOT_ICONS[a.reportType] || "📄"}</span>
+            <div className="flex items-center gap-2 text-[13px] font-medium text-slate-900">
+              <SlotTypeIcon slotId={a.reportType} size={14} className="text-slate-400" />
               <span>{SLOT_NAMES[a.reportType] || a.reportType}</span>
             </div>
             {a.findings.length > 0 && (
-              <div className="mt-2 space-y-0.5 text-sm text-slate-700">
-                {a.findings.map((f, fi) => <div key={fi}>• {f}</div>)}
+              <div className="mt-2 space-y-0.5 text-[13px] text-slate-600">
+                {a.findings.map((f, fi) => <div key={fi}>{f}</div>)}
               </div>
             )}
             {a.recommendations.length > 0 && (
-              <div className="mt-2 space-y-0.5 text-sm text-slate-600">
+              <div className="mt-2 space-y-0.5 text-[13px] text-slate-500">
                 {a.recommendations.map((r, ri) => <div key={ri}>→ {r}</div>)}
               </div>
             )}
@@ -599,13 +631,13 @@ function ConditionalResultsView({ results }: { results: SecondaryAnalysis[] }) {
               <ChemoAdjustmentBanner adj={a.chemotherapyAdjustments} />
             )}
             {a.reportType === "brca" && a.brcaResult && (
-              <div className="mt-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-800">
-                🧬 <b>BRCA Result:</b> {a.brcaResult}
+              <div className="mt-2 flex items-center gap-2 rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-800">
+                <Dna size={14} /> <b>BRCA Result:</b> {a.brcaResult}
               </div>
             )}
             {a.reportType === "nodal" && a.nodalStatus && (
-              <div className="mt-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-800">
-                🖥️ <b>Nodal Status:</b> {a.nodalStatus}
+              <div className="mt-2 flex items-center gap-2 rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-800">
+                <Target size={14} /> <b>Nodal Status:</b> {a.nodalStatus}
               </div>
             )}
           </div>
@@ -616,16 +648,17 @@ function ConditionalResultsView({ results }: { results: SecondaryAnalysis[] }) {
 }
 
 function ChemoAdjustmentBanner({ adj }: { adj: NonNullable<SecondaryAnalysis["chemotherapyAdjustments"]> }) {
-  const cfg: Record<string, { title: string; cls: string }> = {
-    avoid: { title: "✅ Chemotherapy Can Be Safely Avoided", cls: "border-green-300 bg-green-50 text-green-800" },
-    recommend: { title: "⚠️ Chemotherapy Recommended", cls: "border-amber-300 bg-amber-50 text-amber-800" },
-    parp_eligible: { title: "🧬 PARP Inhibitor Eligible", cls: "border-purple-300 bg-purple-50 text-purple-800" },
+  const cfg: Record<string, { title: string; cls: string; icon: typeof CheckCircle2 }> = {
+    avoid: { title: "Chemotherapy Can Be Safely Avoided", cls: "border-emerald-300 bg-emerald-50 text-emerald-800", icon: CheckCircle2 },
+    recommend: { title: "Chemotherapy Recommended", cls: "border-amber-300 bg-amber-50 text-amber-800", icon: AlertTriangle },
+    parp_eligible: { title: "PARP Inhibitor Eligible", cls: "border-purple-300 bg-purple-50 text-purple-800", icon: Dna },
   };
   const c = cfg[adj.action];
   if (!c) return null;
+  const Icon = c.icon;
   return (
     <div className={`mt-2 rounded-md border px-3 py-2 text-sm ${c.cls}`}>
-      <b>{c.title}</b>
+      <b className="flex items-center gap-1.5"><Icon size={14} /> {c.title}</b>
       <div className="mt-1 text-xs">{adj.reason}</div>
       <div className="mt-1 text-xs"><b>Plan:</b> {adj.alternative}</div>
     </div>

@@ -16,7 +16,6 @@ export type FixedField = (typeof FIXED_FIELDS)[number];
 
 export interface SlotDef {
   id: string;
-  icon: string;
   title: string;
   desc: string;
   required: boolean;
@@ -26,8 +25,8 @@ export interface SlotDef {
 }
 
 export const DEFAULT_SLOTS: SlotDef[] = [
-  { id: "histopathology", icon: "🔬", title: "Histopathology / Biopsy", desc: "Confirms cancer type and grade", required: true, reason: "Essential for diagnosis" },
-  { id: "cect", icon: "🖥️", title: "Imaging (CT/MRI)", desc: "Staging and metastasis", required: true, reason: "Essential for staging" },
+  { id: "histopathology", title: "Histopathology / Biopsy", desc: "Confirms cancer type and grade", required: true, reason: "Essential for diagnosis" },
+  { id: "cect", title: "Imaging (CT/MRI)", desc: "Staging and metastasis", required: true, reason: "Essential for staging" },
 ];
 
 export const ALLOWED_EXTS = new Set([".pdf", ".txt", ".png", ".jpg", ".jpeg", ".webp"]);
@@ -60,11 +59,6 @@ export const SLOT_KEYWORDS: Record<string, string[]> = {
   nodal: ["sentinel", "node biopsy", "axillary", "lymph node", "nodal staging", "sln"],
 };
 
-export const SLOT_ICONS: Record<string, string> = {
-  histopathology: "🔬", colonoscopy: "🩺", cect: "🖥️",
-  cea: "🧪", mmr: "🧬", molecular: "🔭", surgical: "⚕️",
-  genomic: "🧬", brca: "🧬", nodal: "🖥️", pasted: "📝",
-};
 export const SLOT_NAMES: Record<string, string> = {
   histopathology: "Histopathology", colonoscopy: "Colonoscopy", cect: "CECT Imaging",
   cea: "CEA", mmr: "MMR/MSI", molecular: "Molecular Panel", surgical: "Surgical Path",
@@ -90,38 +84,38 @@ export function guessSlot(filename: string): string | null {
 // concrete upload slot. Several report ids can map to the same slot id
 // (e.g. "mri", "mri_brain", "cect", "pet_ct" all map to "cect").
 const REPORT_SLOT_MAP: Record<string, Omit<SlotDef, "required" | "reason" | "reportId" | "isConditional">> = {
-  histo: { id: "histopathology", icon: "🔬", title: "Histopathology / Biopsy", desc: "Tumour type, grade, differentiation" },
-  imaging: { id: "cect", icon: "🖥️", title: "Imaging (CT/MRI/PET)", desc: "Staging, metastasis assessment" },
-  cect: { id: "cect", icon: "🖥️", title: "CECT Chest + Abdomen + Pelvis", desc: "Distant staging" },
-  mri: { id: "cect", icon: "🖥️", title: "MRI", desc: "Local staging" },
-  mri_brain: { id: "cect", icon: "🖥️", title: "MRI Brain", desc: "Brain staging" },
-  cea: { id: "cea", icon: "🧪", title: "CEA", desc: "Tumour marker" },
-  mmr: { id: "mmr", icon: "🧬", title: "MMR / MSI Testing", desc: "MLH1, MSH2, MSH6, PMS2" },
-  ras: { id: "molecular", icon: "🧬", title: "KRAS / NRAS / BRAF", desc: "Molecular panel" },
-  pdl1: { id: "molecular", icon: "🧬", title: "PD-L1 Testing", desc: "Immunotherapy eligibility" },
-  receptor: { id: "molecular", icon: "🧬", title: "Receptor Testing (ER/PR/HER2)", desc: "Breast cancer subtyping" },
-  brca: { id: "molecular", icon: "🧬", title: "BRCA1/BRCA2 Testing", desc: "Genetic testing" },
-  molecular: { id: "molecular", icon: "🔭", title: "Molecular / Genetic Panel", desc: "Comprehensive genomic profiling" },
-  scope: { id: "colonoscopy", icon: "🩺", title: "Colonoscopy / Endoscopy", desc: "Tumour location, size" },
-  surg: { id: "surgical", icon: "⚕️", title: "Surgical Histopathology", desc: "pTNM stage, margins" },
-  cytogen: { id: "molecular", icon: "🧬", title: "Cytogenetics", desc: "Karyotype, FISH" },
-  ihc: { id: "molecular", icon: "🧬", title: "Immunophenotyping (IHC)", desc: "CD20, BCL2, BCL6, MYC" },
-  pet_ct: { id: "cect", icon: "🖥️", title: "PET-CT", desc: "FDG-PET staging" },
-  bm: { id: "histopathology", icon: "🔬", title: "Bone Marrow Biopsy", desc: "Blast percentage, cytochemistry" },
-  cbc: { id: "cea", icon: "🧪", title: "CBC + Blood Film", desc: "Haematology" },
-  ldh_b2m: { id: "cea", icon: "🧪", title: "LDH + Beta-2 Microglobulin", desc: "ISS staging" },
-  afp: { id: "cea", icon: "🧪", title: "AFP", desc: "Tumour marker" },
-  psa: { id: "cea", icon: "🧪", title: "PSA", desc: "Tumour marker" },
-  ca125: { id: "cea", icon: "🧪", title: "CA-125", desc: "Tumour marker" },
-  ca199: { id: "cea", icon: "🧪", title: "CA 19-9", desc: "Tumour marker" },
-  hrd: { id: "molecular", icon: "🧬", title: "HRD Testing", desc: "Homologous Recombination Deficiency" },
-  liver_fn: { id: "cea", icon: "🧪", title: "Liver Function Tests", desc: "Child-Pugh score" },
-  hbv_hcv: { id: "cea", icon: "🧪", title: "HBV / HCV Serology", desc: "Aetiology testing" },
-  spep: { id: "cea", icon: "🧪", title: "SPEP / UPEP + Free Light Chains", desc: "M-protein quantification" },
-  neuro: { id: "histopathology", icon: "🧪", title: "Neurological Assessment", desc: "KPS/ECOG baseline" },
-  bone_scan: { id: "cect", icon: "🖥️", title: "Bone Scan / PSMA PET-CT", desc: "Bone metastasis staging" },
-  genomic: { id: "genomic", icon: "🧬", title: "Genomic Risk Score (Oncotype DX / MammaPrint)", desc: "Recurrence risk assessment for ER+/HER2- early breast cancer" },
-  nodal: { id: "nodal", icon: "🖥️", title: "Sentinel Node Biopsy / Axillary Evaluation", desc: "Nodal staging if imaging is indeterminate" },
+  histo: { id: "histopathology", title: "Histopathology / Biopsy", desc: "Tumour type, grade, differentiation" },
+  imaging: { id: "cect", title: "Imaging (CT/MRI/PET)", desc: "Staging, metastasis assessment" },
+  cect: { id: "cect", title: "CECT Chest + Abdomen + Pelvis", desc: "Distant staging" },
+  mri: { id: "cect", title: "MRI", desc: "Local staging" },
+  mri_brain: { id: "cect", title: "MRI Brain", desc: "Brain staging" },
+  cea: { id: "cea", title: "CEA", desc: "Tumour marker" },
+  mmr: { id: "mmr", title: "MMR / MSI Testing", desc: "MLH1, MSH2, MSH6, PMS2" },
+  ras: { id: "molecular", title: "KRAS / NRAS / BRAF", desc: "Molecular panel" },
+  pdl1: { id: "molecular", title: "PD-L1 Testing", desc: "Immunotherapy eligibility" },
+  receptor: { id: "molecular", title: "Receptor Testing (ER/PR/HER2)", desc: "Breast cancer subtyping" },
+  brca: { id: "molecular", title: "BRCA1/BRCA2 Testing", desc: "Genetic testing" },
+  molecular: { id: "molecular", title: "Molecular / Genetic Panel", desc: "Comprehensive genomic profiling" },
+  scope: { id: "colonoscopy", title: "Colonoscopy / Endoscopy", desc: "Tumour location, size" },
+  surg: { id: "surgical", title: "Surgical Histopathology", desc: "pTNM stage, margins" },
+  cytogen: { id: "molecular", title: "Cytogenetics", desc: "Karyotype, FISH" },
+  ihc: { id: "molecular", title: "Immunophenotyping (IHC)", desc: "CD20, BCL2, BCL6, MYC" },
+  pet_ct: { id: "cect", title: "PET-CT", desc: "FDG-PET staging" },
+  bm: { id: "histopathology", title: "Bone Marrow Biopsy", desc: "Blast percentage, cytochemistry" },
+  cbc: { id: "cea", title: "CBC + Blood Film", desc: "Haematology" },
+  ldh_b2m: { id: "cea", title: "LDH + Beta-2 Microglobulin", desc: "ISS staging" },
+  afp: { id: "cea", title: "AFP", desc: "Tumour marker" },
+  psa: { id: "cea", title: "PSA", desc: "Tumour marker" },
+  ca125: { id: "cea", title: "CA-125", desc: "Tumour marker" },
+  ca199: { id: "cea", title: "CA 19-9", desc: "Tumour marker" },
+  hrd: { id: "molecular", title: "HRD Testing", desc: "Homologous Recombination Deficiency" },
+  liver_fn: { id: "cea", title: "Liver Function Tests", desc: "Child-Pugh score" },
+  hbv_hcv: { id: "cea", title: "HBV / HCV Serology", desc: "Aetiology testing" },
+  spep: { id: "cea", title: "SPEP / UPEP + Free Light Chains", desc: "M-protein quantification" },
+  neuro: { id: "histopathology", title: "Neurological Assessment", desc: "KPS/ECOG baseline" },
+  bone_scan: { id: "cect", title: "Bone Scan / PSMA PET-CT", desc: "Bone metastasis staging" },
+  genomic: { id: "genomic", title: "Genomic Risk Score (Oncotype DX / MammaPrint)", desc: "Recurrence risk assessment for ER+/HER2- early breast cancer" },
+  nodal: { id: "nodal", title: "Sentinel Node Biopsy / Axillary Evaluation", desc: "Nodal staging if imaging is indeterminate" },
 };
 
 export function isBreastCancer(cancerType: string | null) {

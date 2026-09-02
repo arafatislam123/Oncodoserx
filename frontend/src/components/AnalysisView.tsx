@@ -1,7 +1,25 @@
 // Shared rendering for a full analysis result (single-report /upload and
 // multi-report /multi-upload both produce the same AnalysisResult shape and
-// render it identically). Ported from public/app.js's renderResults() and
-// friends.
+// render it identically).
+import {
+  AlertCircle,
+  AlertOctagon,
+  AlertTriangle,
+  Activity,
+  BarChart3,
+  BookOpen,
+  BrainCircuit,
+  CheckCircle2,
+  ClipboardList,
+  FolderOpen,
+  Info,
+  ListChecks,
+  Pill,
+  StickyNote,
+  Target,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
 import type {
   AnalysisResult,
   DataCheck,
@@ -12,20 +30,27 @@ import type {
   UploadedSlot,
 } from "@/lib/api";
 import { generateTreatmentPlan } from "@/lib/treatmentPlan";
-import { SLOT_ICONS, SLOT_NAMES } from "@/lib/slots";
+import { SlotTypeIcon, REPORT_TYPE_ICONS, SLOT_TYPE_ICONS } from "@/lib/icons";
 
 const badgeClass: Record<string, string> = {
-  green: "bg-green-100 text-green-800",
-  yellow: "bg-amber-100 text-amber-800",
-  red: "bg-red-100 text-red-800",
-  blue: "bg-blue-100 text-blue-800",
-  grey: "bg-slate-100 text-slate-700",
-  purple: "bg-purple-100 text-purple-800",
+  green: "bg-emerald-50 text-emerald-700",
+  yellow: "bg-amber-50 text-amber-700",
+  red: "bg-red-50 text-red-700",
+  blue: "bg-brand-50 text-brand-700",
+  grey: "bg-slate-100 text-slate-600",
+  purple: "bg-purple-50 text-purple-700",
 };
 
 function Badge({ color, children }: { color: keyof typeof badgeClass; children: React.ReactNode }) {
+  return <span className={`badge ${badgeClass[color]}`}>{children}</span>;
+}
+
+function CardHeading({ icon: Icon, children }: { icon: LucideIcon; children: React.ReactNode }) {
   return (
-    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${badgeClass[color]}`}>{children}</span>
+    <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-900">
+      <Icon size={16} strokeWidth={2} className="text-slate-400" />
+      {children}
+    </h2>
   );
 }
 
@@ -39,12 +64,15 @@ export function AnalysisView({
   const { parsed, primaryPrediction, ruleRecommendations, dataCheck, reportClassification, agreement, uploadedSlots } = result;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {result.cancerTypeMismatch && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          ⚠️ You selected <b>{result.cancerTypeMismatch.selected}</b> but the report text detected{" "}
-          <b>{result.cancerTypeMismatch.detected}</b>. The prediction below used your selected type — verify the
-          uploaded document matches.
+        <div className="flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+          <span>
+            You selected <b>{result.cancerTypeMismatch.selected}</b> but the report text detected{" "}
+            <b>{result.cancerTypeMismatch.detected}</b>. The prediction below used your selected type — verify the
+            uploaded document matches.
+          </span>
         </div>
       )}
 
@@ -67,8 +95,8 @@ export function AnalysisView({
       {primaryPrediction?.featureImportance && <FeatureImportanceCard fi={primaryPrediction.featureImportance} />}
 
       <div className="card">
-        <h2 className="text-lg font-semibold text-slate-900">Extracted Text (preview)</h2>
-        <pre className="mt-3 max-h-96 overflow-auto whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-xs text-slate-700">
+        <CardHeading icon={StickyNote}>Extracted Text (preview)</CardHeading>
+        <pre className="mt-3 max-h-96 overflow-auto whitespace-pre-wrap rounded-lg bg-slate-50 p-3 font-mono text-[12px] leading-relaxed text-slate-600">
           {parsed.rawText || "(no text extracted)"}
         </pre>
       </div>
@@ -80,16 +108,18 @@ function UploadedSlotsCard({ slots }: { slots: UploadedSlot[] }) {
   return (
     <div className="card">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-900">📂 Reports Analyzed ({slots.length})</h2>
-        <Badge color="green">{slots.length} report{slots.length > 1 ? "s" : ""} combined</Badge>
+        <CardHeading icon={FolderOpen}>Reports Analyzed ({slots.length})</CardHeading>
+        <Badge color="green">{slots.length} combined</Badge>
       </div>
       <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
         {slots.map((s, i) => (
           <div key={i} className="flex items-center gap-3 rounded-lg bg-slate-50 px-3 py-2">
-            <span>{SLOT_ICONS[s.slotId] || "📄"}</span>
-            <div>
-              <div className="text-sm font-medium text-slate-800">{SLOT_NAMES[s.slotId] || s.slotId}</div>
-              <div className="text-xs text-slate-500">{s.filename} · {s.chars.toLocaleString()} chars</div>
+            <SlotTypeIcon slotId={s.slotId} size={15} strokeWidth={2} className="shrink-0 text-slate-400" />
+            <div className="min-w-0">
+              <div className="truncate text-[13px] font-medium text-slate-800">
+                {SLOT_TYPE_ICONS[s.slotId] ? s.slotId.replace(/_/g, " ") : s.slotId}
+              </div>
+              <div className="truncate text-[12px] text-slate-400">{s.filename} · {s.chars.toLocaleString()} chars</div>
             </div>
           </div>
         ))}
@@ -98,10 +128,6 @@ function UploadedSlotsCard({ slots }: { slots: UploadedSlot[] }) {
   );
 }
 
-const TYPE_ICON: Record<string, string> = {
-  HISTOPATHOLOGY: "🔬", COLONOSCOPY: "🩺", IMAGING: "🖥️", MOLECULAR: "🧬",
-  TUMOR_MARKER: "🧪", BLOOD: "🩸", SURGICAL_PATH: "⚕️", CLINICAL_NOTES: "📋", UNKNOWN: "❓",
-};
 const TYPE_COLOR: Record<string, keyof typeof badgeClass> = {
   HISTOPATHOLOGY: "green", COLONOSCOPY: "blue", IMAGING: "blue", MOLECULAR: "purple",
   TUMOR_MARKER: "yellow", BLOOD: "grey", SURGICAL_PATH: "green", CLINICAL_NOTES: "grey", UNKNOWN: "red",
@@ -109,32 +135,42 @@ const TYPE_COLOR: Record<string, keyof typeof badgeClass> = {
 
 function ReportTypeCard({ rc }: { rc: AnalysisResult["reportClassification"] }) {
   if (!rc.primaryType) return null;
-  const icon = TYPE_ICON[rc.primaryType] || "📄";
+  const Icon = REPORT_TYPE_ICONS[rc.primaryType] || REPORT_TYPE_ICONS.UNKNOWN;
   const color = TYPE_COLOR[rc.primaryType] || "grey";
   return (
     <div className="card">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-900">📊 Report Type Analysis</h2>
-        <Badge color={color}>{icon} {rc.primaryLabel}</Badge>
+        <CardHeading icon={ListChecks}>Report Type Analysis</CardHeading>
+        <Badge color={color}>
+          <Icon size={11} /> {rc.primaryLabel}
+        </Badge>
       </div>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {(rc.allTypes || []).slice(0, 4).map((t, i) => (
-          <span key={i} className="rounded-full border border-slate-200 px-2.5 py-1 text-xs text-slate-600">
-            {TYPE_ICON[t.type] || "📄"} {t.label}
-          </span>
-        ))}
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {(rc.allTypes || []).slice(0, 4).map((t, i) => {
+          const TIcon = REPORT_TYPE_ICONS[t.type] || REPORT_TYPE_ICONS.UNKNOWN;
+          return (
+            <span key={i} className="flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-[12px] text-slate-500">
+              <TIcon size={11} /> {t.label}
+            </span>
+          );
+        })}
       </div>
       {rc.markerMismatch && (
-        <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-          ⚠️ <b>{rc.markerMismatch.marker.toUpperCase()}</b> is a tumour marker for{" "}
-          <b>{rc.markerMismatch.expectedCancer}</b>. Do not use this marker alone to classify a different cancer
-          type.
+        <div className="mt-3 flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          <AlertTriangle size={15} className="mt-0.5 shrink-0" />
+          <span>
+            <b>{rc.markerMismatch.marker.toUpperCase()}</b> is a tumour marker for <b>{rc.markerMismatch.expectedCancer}</b>. Do
+            not use this marker alone to classify a different cancer type.
+          </span>
         </div>
       )}
       {rc.isTumorMarkerOnly && (
-        <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          🚫 This is a standalone tumour marker report. Tumour markers alone cannot determine cancer type, stage, or
-          treatment. A histopathology/biopsy report is required.
+        <div className="mt-3 flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <AlertOctagon size={15} className="mt-0.5 shrink-0" />
+          <span>
+            This is a standalone tumour marker report. Tumour markers alone cannot determine cancer type, stage, or
+            treatment. A histopathology/biopsy report is required.
+          </span>
         </div>
       )}
     </div>
@@ -145,29 +181,28 @@ function DataCheckCard({ dc }: { dc: DataCheck }) {
   if (dc.completeness == null) return null;
   const tierColor: Record<string, keyof typeof badgeClass> = { complete: "green", partial: "yellow", insufficient: "red" };
   const color = tierColor[dc.dataTier || ""] || "grey";
-  const barColor: Record<string, string> = { green: "bg-green-500", yellow: "bg-amber-500", red: "bg-red-500", grey: "bg-slate-400" };
+  const barColor: Record<string, string> = { green: "bg-emerald-500", yellow: "bg-amber-500", red: "bg-red-500", grey: "bg-slate-400" };
 
   return (
     <div className="card">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-900">📋 Data Completeness</h2>
-        <Badge color={color}>{dc.completeness}% Complete · {cap(dc.dataTier)}</Badge>
+        <CardHeading icon={ListChecks}>Data Completeness</CardHeading>
+        <Badge color={color}>{dc.completeness}% · {cap(dc.dataTier)}</Badge>
       </div>
-      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
         <div className={`h-full ${barColor[color]}`} style={{ width: `${dc.completeness}%` }} />
       </div>
 
       {dc.molecularNeeded && (
-        <div className="mt-3 rounded-lg border border-purple-200 bg-purple-50 px-3 py-2 text-sm text-purple-800">
-          🧬 Molecular / genetic testing recommended for this cancer type.
+        <div className="mt-3 flex items-start gap-2.5 rounded-lg border border-purple-200 bg-purple-50 px-3 py-2 text-sm text-purple-800">
+          <Zap size={15} className="mt-0.5 shrink-0" />
+          Molecular / genetic testing recommended for this cancer type.
         </div>
       )}
 
       {dc.missingReports && dc.missingReports.length > 0 && (
         <>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Reports Still Needed ({dc.missingReports.length})
-          </p>
+          <p className="section-label mt-4">Reports Still Needed ({dc.missingReports.length})</p>
           <div className="mt-2 space-y-1">
             {dc.missingReports.map((r) => (
               <RequirementRow key={r.id} req={r} status="missing" />
@@ -178,9 +213,7 @@ function DataCheckCard({ dc }: { dc: DataCheck }) {
 
       {dc.satisfiedReports && dc.satisfiedReports.length > 0 && (
         <>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Reports Detected ({dc.satisfiedReports.length})
-          </p>
+          <p className="section-label mt-4">Reports Detected ({dc.satisfiedReports.length})</p>
           <div className="mt-2 space-y-1">
             {dc.satisfiedReports.map((r) => (
               <RequirementRow key={r.id} req={r} status="ok" />
@@ -191,11 +224,9 @@ function DataCheckCard({ dc }: { dc: DataCheck }) {
 
       {dc.conditionalReports && dc.conditionalReports.length > 0 && (
         <>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-blue-600">
-            🎯 Conditional Reports (Breast Cancer)
-          </p>
-          <p className="mb-2 text-xs text-slate-500">
-            These reports are recommended after primary analysis to refine the chemotherapy plan.
+          <p className="section-label mt-4 text-brand-600">Conditional Reports (Breast Cancer)</p>
+          <p className="mb-2 text-[12px] text-slate-400">
+            Recommended after primary analysis to refine the chemotherapy plan.
           </p>
           <div className="mt-2 space-y-1">
             {dc.conditionalReports.map((r) => {
@@ -208,10 +239,10 @@ function DataCheckCard({ dc }: { dc: DataCheck }) {
 
       {dc.clinicalNotes && dc.clinicalNotes.length > 0 && (
         <div className="mt-4 space-y-1 rounded-lg bg-slate-50 p-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">⚕️ Clinical Notes</p>
+          <p className="section-label">Clinical Notes</p>
           {dc.clinicalNotes.map((n, i) => (
-            <p key={i} className="text-sm text-slate-700">
-              <span className="font-semibold">{n.field.toUpperCase()}</span>: {n.note}
+            <p key={i} className="text-[13px] text-slate-600">
+              <span className="font-semibold text-slate-700">{n.field.toUpperCase()}</span>: {n.note}
             </p>
           ))}
         </div>
@@ -223,17 +254,21 @@ function DataCheckCard({ dc }: { dc: DataCheck }) {
 function RequirementRow({ req, status }: { req: { icon: string; name: string; reason?: string }; status: "ok" | "missing" }) {
   return (
     <div
-      className={`flex items-center gap-3 rounded-lg border px-3 py-2 text-sm ${
-        status === "ok" ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"
+      className={`flex items-center gap-3 rounded-lg border px-3 py-2 text-[13px] ${
+        status === "ok" ? "border-emerald-200 bg-emerald-50" : "border-red-200 bg-red-50"
       }`}
     >
-      <span>{req.icon}</span>
+      {status === "ok" ? (
+        <CheckCircle2 size={15} className="shrink-0 text-emerald-500" />
+      ) : (
+        <AlertCircle size={15} className="shrink-0 text-red-400" />
+      )}
       <div className="flex-1">
         <div className="font-medium text-slate-800">{req.name}</div>
-        {req.reason && <div className="text-xs text-slate-500">{req.reason}</div>}
+        {req.reason && <div className="text-[12px] text-slate-400">{req.reason}</div>}
       </div>
-      <span className={`text-xs font-semibold ${status === "ok" ? "text-green-700" : "text-red-700"}`}>
-        {status === "ok" ? "✓ Present" : "Needed"}
+      <span className={`text-[11px] font-semibold ${status === "ok" ? "text-emerald-700" : "text-red-600"}`}>
+        {status === "ok" ? "Present" : "Needed"}
       </span>
     </div>
   );
@@ -249,10 +284,10 @@ const BM_FIELDS: [string, string][] = [
 
 function bmColor(v: string): string {
   const s = String(v).toLowerCase();
-  if (["positive", ">=50%", "intact", "proficient"].includes(s)) return "text-green-700";
+  if (["positive", ">=50%", "intact", "proficient"].includes(s)) return "text-emerald-700";
   if (["negative", "lost"].includes(s)) return "text-red-700";
   if (["mutated", "deficient (dmmr)", "itd-positive"].includes(s)) return "text-orange-700";
-  if (s === "wild-type") return "text-slate-500";
+  if (s === "wild-type") return "text-slate-400";
   return "text-slate-900";
 }
 
@@ -262,8 +297,8 @@ function ExtractedCard({ parsed }: { parsed: ParsedReport }) {
     if (v != null && v !== "N/A" && v !== "") items.push({ l, v: String(v), c });
   };
 
-  add("Cancer Type", parsed.cancerType || "Not detected", parsed.cancerType ? "" : "text-slate-400");
-  add("Stage", parsed.stage || "Not detected", parsed.stage ? "" : "text-slate-400");
+  add("Cancer Type", parsed.cancerType || "Not detected", parsed.cancerType ? "" : "text-slate-300");
+  add("Stage", parsed.stage || "Not detected", parsed.stage ? "" : "text-slate-300");
   if (parsed.tStage) add("T Stage", "T" + parsed.tStage);
   if (parsed.nStage) add("N Stage", "N" + parsed.nStage);
   if (parsed.mStage) add("M Stage", "M" + parsed.mStage);
@@ -278,13 +313,13 @@ function ExtractedCard({ parsed }: { parsed: ParsedReport }) {
     add("PNI", cap(parsed.periNeuralInvasion), parsed.periNeuralInvasion === "present" ? "text-red-700" : "");
   if (parsed.depthOfInvasion) add("Depth", parsed.depthOfInvasion);
   if (parsed.surgicalMargins)
-    add("Margins", cap(parsed.surgicalMargins), parsed.surgicalMargins === "clear" ? "text-green-700" : "text-red-700");
+    add("Margins", cap(parsed.surgicalMargins), parsed.surgicalMargins === "clear" ? "text-emerald-700" : "text-red-700");
   if (parsed.lymphNodes?.lymphNodeStatus) {
     const ln = parsed.lymphNodes;
     add(
       "Lymph Nodes",
       cap(ln.lymphNodeStatus!) + (ln.lymphNodesPositive != null ? ` (${ln.lymphNodesPositive}/${ln.lymphNodesTotal ?? "?"})` : ""),
-      ln.lymphNodeStatus === "negative" ? "text-green-700" : "text-red-700"
+      ln.lymphNodeStatus === "negative" ? "text-emerald-700" : "text-red-700"
     );
   }
 
@@ -305,26 +340,26 @@ function ExtractedCard({ parsed }: { parsed: ParsedReport }) {
   if (bm.ki67 != null) add("Ki67", `${bm.ki67}%`, Number(bm.ki67) > 20 ? "text-red-700" : "");
 
   const confBadge: Record<string, { color: keyof typeof badgeClass; label: string }> = {
-    high: { color: "green", label: "✓ High Confidence" },
-    medium: { color: "yellow", label: "~ Medium Confidence" },
-    low: { color: "red", label: "! Low Confidence" },
+    high: { color: "green", label: "High confidence" },
+    medium: { color: "yellow", label: "Medium confidence" },
+    low: { color: "red", label: "Low confidence" },
   };
   const conf = confBadge[parsed.confidence || "low"];
 
   return (
     <div className="card">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-900">🧬 Extracted Clinical Data</h2>
+        <CardHeading icon={ClipboardList}>Extracted Clinical Data</CardHeading>
         <Badge color={conf.color}>{conf.label}</Badge>
       </div>
       {items.length === 0 ? (
-        <p className="mt-3 text-sm text-slate-500">No clinical data could be extracted from the provided reports.</p>
+        <p className="mt-3 text-sm text-slate-400">No clinical data could be extracted from the provided reports.</p>
       ) : (
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
           {items.map((i, idx) => (
             <div key={idx} className="rounded-lg bg-slate-50 px-3 py-2">
-              <div className="text-xs text-slate-500">{i.l}</div>
-              <div className={`text-sm font-medium ${i.c || "text-slate-900"}`}>{i.v}</div>
+              <div className="text-[11px] text-slate-400">{i.l}</div>
+              <div className={`text-[13px] font-medium ${i.c || "text-slate-900"}`}>{i.v}</div>
             </div>
           ))}
         </div>
@@ -334,9 +369,9 @@ function ExtractedCard({ parsed }: { parsed: ParsedReport }) {
 }
 
 const BLOCK_TITLES: Record<string, string> = {
-  TUMOR_MARKER_ONLY_NO_CANCER: "🚫 Prediction Blocked — Tumour Marker Only",
-  MARKER_CANCER_MISMATCH: "⚠️ Prediction Blocked — Marker / Cancer Mismatch",
-  NO_CANCER_TYPE: "❓ Prediction Blocked — Cancer Type Not Confirmed",
+  TUMOR_MARKER_ONLY_NO_CANCER: "Prediction Blocked — Tumour Marker Only",
+  MARKER_CANCER_MISMATCH: "Prediction Blocked — Marker / Cancer Mismatch",
+  NO_CANCER_TYPE: "Prediction Blocked — Cancer Type Not Confirmed",
 };
 
 function BlockedCard({
@@ -349,8 +384,10 @@ function BlockedCard({
   markerMismatch?: { marker: string; expectedCancer: string } | null;
 }) {
   return (
-    <div className="card border-red-200 bg-red-50">
-      <h2 className="text-lg font-semibold text-red-800">{BLOCK_TITLES[reason || ""] || "⚠️ Prediction Blocked"}</h2>
+    <div className="card border-red-200 bg-red-50/60">
+      <h2 className="flex items-center gap-2 text-[15px] font-semibold text-red-800">
+        <AlertOctagon size={17} /> {BLOCK_TITLES[reason || ""] || "Prediction Blocked"}
+      </h2>
       <p className="mt-2 text-sm text-red-700">{message}</p>
       {markerMismatch && (
         <dl className="mt-3 space-y-1 text-sm text-red-700">
@@ -382,16 +419,17 @@ function AgreementBanner({
   if (!agreement || !rules.length) return null;
   const mlC = ml.predictedCycles;
   const rC = rules[0]?.cycles;
-  const cfg: Record<string, { cls: string; icon: string; text: React.ReactNode }> = {
-    strong: { cls: "border-green-200 bg-green-50 text-green-800", icon: "✅", text: <>ML and NCCN agree: <b>{mlC} cycles</b>. High confidence.</> },
-    moderate: { cls: "border-blue-200 bg-blue-50 text-blue-800", icon: "ℹ️", text: <>ML ({mlC} cycles) and NCCN ({rC} cycles) closely aligned.</> },
-    divergent: { cls: "border-amber-200 bg-amber-50 text-amber-800", icon: "⚠️", text: <>ML predicts {mlC} cycles; NCCN references {rC} cycles. Review both.</> },
+  const cfg: Record<string, { cls: string; icon: LucideIcon; text: React.ReactNode }> = {
+    strong: { cls: "border-emerald-200 bg-emerald-50 text-emerald-800", icon: CheckCircle2, text: <>ML and NCCN agree: <b>{mlC} cycles</b>. High confidence.</> },
+    moderate: { cls: "border-brand-200 bg-brand-50 text-brand-800", icon: Info, text: <>ML ({mlC} cycles) and NCCN ({rC} cycles) closely aligned.</> },
+    divergent: { cls: "border-amber-200 bg-amber-50 text-amber-800", icon: AlertTriangle, text: <>ML predicts {mlC} cycles; NCCN references {rC} cycles. Review both.</> },
   };
   const c = cfg[agreement];
   if (!c) return null;
+  const Icon = c.icon;
   return (
-    <div className={`rounded-lg border px-4 py-3 text-sm ${c.cls}`}>
-      {c.icon} {c.text}
+    <div className={`flex items-center gap-2.5 rounded-lg border px-4 py-3 text-sm ${c.cls}`}>
+      <Icon size={16} className="shrink-0" /> {c.text}
     </div>
   );
 }
@@ -408,9 +446,9 @@ function MLPredictionCard({
   if (!ml) {
     return (
       <div className="card">
-        <h2 className="text-lg font-semibold text-slate-900">🤖 ML Prediction</h2>
-        <p className="mt-2 text-sm text-slate-500">
-          ⚠ Add more report data (histopathology, staging) to enable ML prediction.
+        <CardHeading icon={BrainCircuit}>ML Prediction</CardHeading>
+        <p className="mt-2 text-sm text-slate-400">
+          Add more report data (histopathology, staging) to enable ML prediction.
         </p>
       </div>
     );
@@ -422,38 +460,38 @@ function MLPredictionCard({
   return (
     <div className="card space-y-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-900">🤖 ML Prediction</h2>
+        <CardHeading icon={BrainCircuit}>ML Prediction</CardHeading>
         <Badge color="blue">{ml.datasetCancerType || "Matched"}</Badge>
       </div>
 
       <div className="grid grid-cols-3 gap-3 text-center">
-        <div className="rounded-lg bg-blue-50 py-4">
-          <div className="text-2xl font-bold text-blue-700">{isCont ? "Cont." : ml.predictedCycles}</div>
-          <div className="text-xs text-slate-600">{isCont ? "Continuous / Targeted" : "Chemotherapy Cycles"}</div>
+        <div className="rounded-lg bg-brand-50 py-4">
+          <div className="text-2xl font-semibold tracking-tight text-brand-800">{isCont ? "Cont." : ml.predictedCycles}</div>
+          <div className="text-[12px] text-slate-500">{isCont ? "Continuous / Targeted" : "Chemotherapy Cycles"}</div>
         </div>
         <div className="rounded-lg bg-slate-50 py-4">
           <div className="text-lg font-semibold text-slate-700">{ml.cycleBucket}</div>
-          <div className="text-xs text-slate-600">Cycle Range (ML)</div>
+          <div className="text-[12px] text-slate-500">Cycle Range (ML)</div>
         </div>
-        <div className="rounded-lg bg-green-50 py-4">
-          <div className="text-2xl font-bold text-green-700">{ml.modelAccuracy}</div>
-          <div className="text-xs text-slate-600">Model Accuracy</div>
+        <div className="rounded-lg bg-emerald-50 py-4">
+          <div className="text-2xl font-semibold tracking-tight text-emerald-700">{ml.modelAccuracy}</div>
+          <div className="text-[12px] text-slate-500">Model Accuracy</div>
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 p-4">
+      <div className="rounded-lg border border-slate-200 p-4">
         <div className="flex items-center gap-2">
-          <span>📋</span>
-          <span className="font-semibold text-slate-900">Detailed Treatment Plan</span>
+          <ClipboardList size={15} className="text-slate-400" />
+          <span className="text-[13px] font-semibold text-slate-900">Detailed Treatment Plan</span>
         </div>
 
         <div className="mt-3">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">🎯 Recommended Regimen</div>
-          <div className="mt-1 font-medium text-slate-900">{ml.regimen}</div>
+          <div className="section-label flex items-center gap-1.5"><Target size={11} /> Recommended Regimen</div>
+          <div className="mt-1 text-[13px] font-medium text-slate-900">{ml.regimen}</div>
           {plan.drugs.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-2 flex flex-wrap gap-1.5">
               {plan.drugs.map((d, i) => (
-                <span key={i} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-700">{d}</span>
+                <span key={i} className="rounded-full bg-slate-100 px-2.5 py-1 text-[12px] text-slate-600">{d}</span>
               ))}
             </div>
           )}
@@ -466,18 +504,12 @@ function MLPredictionCard({
           <ScheduleItem label="Intent" value={cap(plan.intent)} />
         </div>
 
-        {plan.supportiveCare.length > 0 && (
-          <PlanList title="💊 Supportive Care" items={plan.supportiveCare} />
-        )}
-        {plan.monitoring.length > 0 && (
-          <PlanList title="🔬 Monitoring & Follow-up" items={plan.monitoring} />
-        )}
-        {plan.notes.length > 0 && (
-          <PlanList title="📝 Clinical Notes" items={plan.notes} />
-        )}
+        {plan.supportiveCare.length > 0 && <PlanList icon={Pill} title="Supportive Care" items={plan.supportiveCare} />}
+        {plan.monitoring.length > 0 && <PlanList icon={Activity} title="Monitoring & Follow-up" items={plan.monitoring} />}
+        {plan.notes.length > 0 && <PlanList icon={StickyNote} title="Clinical Notes" items={plan.notes} />}
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         <Badge color="blue">{ml.datasetCancerType || "Matched"}</Badge>
         <Badge color="grey">Stage {ml.datasetStage}</Badge>
         {ml.similarPatients ? <Badge color="grey">~{ml.similarPatients.toLocaleString()} similar patients</Badge> : null}
@@ -493,19 +525,23 @@ function MLPredictionCard({
 
       {ml.biomarkerNotes && ml.biomarkerNotes.length > 0 && (
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Biomarker Adjustments Applied</p>
-          <div className="mt-1 space-y-1">
+          <p className="section-label flex items-center gap-1.5"><Zap size={11} /> Biomarker Adjustments Applied</p>
+          <div className="mt-1.5 space-y-1">
             {ml.biomarkerNotes.map((n, i) => (
-              <p key={i} className="text-sm text-slate-700">⚡ {n}</p>
+              <p key={i} className="text-[13px] text-slate-600">{n}</p>
             ))}
           </div>
         </div>
       )}
       {ml.psNote && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">⚠️ {ml.psNote}</div>
+        <div className="flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          <AlertTriangle size={15} className="mt-0.5 shrink-0" /> {ml.psNote}
+        </div>
       )}
       {ml.completenessNote && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-800">ℹ️ {ml.completenessNote}</div>
+        <div className="flex items-start gap-2.5 rounded-lg border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-800">
+          <Info size={15} className="mt-0.5 shrink-0" /> {ml.completenessNote}
+        </div>
       )}
     </div>
   );
@@ -514,19 +550,19 @@ function MLPredictionCard({
 function ScheduleItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg bg-slate-50 px-3 py-2">
-      <div className="text-xs text-slate-500">{label}</div>
-      <div className="text-sm font-medium text-slate-900">{value}</div>
+      <div className="text-[11px] text-slate-400">{label}</div>
+      <div className="text-[13px] font-medium text-slate-900">{value}</div>
     </div>
   );
 }
 
-function PlanList({ title, items }: { title: string; items: string[] }) {
+function PlanList({ icon: Icon, title, items }: { icon: LucideIcon; title: string; items: string[] }) {
   return (
     <div className="mt-4">
-      <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{title}</div>
-      <div className="mt-1 space-y-1">
+      <div className="section-label flex items-center gap-1.5"><Icon size={11} /> {title}</div>
+      <div className="mt-1.5 space-y-1">
         {items.map((s, i) => (
-          <div key={i} className="rounded-lg bg-slate-50 px-3 py-1.5 text-sm text-slate-700">{s}</div>
+          <div key={i} className="rounded-lg bg-slate-50 px-3 py-1.5 text-[13px] text-slate-600">{s}</div>
         ))}
       </div>
     </div>
@@ -537,13 +573,13 @@ function RulesCard({ rules }: { rules: RuleRecommendation[] }) {
   return (
     <div className="card">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-900">📚 NCCN Rule-Based Recommendations</h2>
+        <CardHeading icon={BookOpen}>NCCN Rule-Based Recommendations</CardHeading>
         <Badge color={rules.length ? "blue" : "grey"}>
-          {rules.length ? `${rules.length} protocol${rules.length > 1 ? "s" : ""} matched` : "0 matched"}
+          {rules.length ? `${rules.length} matched` : "0 matched"}
         </Badge>
       </div>
       {rules.length === 0 ? (
-        <p className="mt-3 text-sm text-slate-500">
+        <p className="mt-3 text-sm text-slate-400">
           No NCCN protocol matched. Provide complete histopathology and staging data.
         </p>
       ) : (
@@ -551,35 +587,35 @@ function RulesCard({ rules }: { rules: RuleRecommendation[] }) {
           {rules.map((r, i) => {
             const confColor: Record<string, keyof typeof badgeClass> = { High: "green", Moderate: "yellow", Low: "grey" };
             return (
-              <div key={i} className={`rounded-xl border p-4 ${i === 0 ? "border-blue-300 bg-blue-50/40" : "border-slate-200"}`}>
+              <div key={i} className={`rounded-lg border p-4 ${i === 0 ? "border-brand-200 bg-brand-50/30" : "border-slate-200"}`}>
                 <div className="flex items-start justify-between gap-3">
-                  <div className="font-medium text-slate-900">{r.regimen}</div>
-                  <div className="flex shrink-0 gap-2">
-                    {r.intent && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs capitalize text-slate-700">{r.intent}</span>}
+                  <div className="text-[13px] font-medium text-slate-900">{r.regimen}</div>
+                  <div className="flex shrink-0 gap-1.5">
+                    {r.intent && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] capitalize text-slate-600">{r.intent}</span>}
                     {r.confidence && <Badge color={confColor[r.confidence] || "grey"}>{r.confidence}</Badge>}
                   </div>
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-xl font-bold text-slate-900">{r.cycles > 0 ? r.cycles : "—"}</span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-lg font-semibold tracking-tight text-slate-900">{r.cycles > 0 ? r.cycles : "—"}</span>
+                  <span className="text-[12px] text-slate-400">
                     {r.cycles > 0 ? `cycles · every ${r.interval} days` : "Continuous therapy"}
                   </span>
                 </div>
                 {r.drugs && r.drugs.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-2 flex flex-wrap gap-1.5">
                     {r.drugs.map((d, di) => (
-                      <span key={di} className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-700">{d}</span>
+                      <span key={di} className="rounded-full bg-slate-100 px-2.5 py-1 text-[12px] text-slate-600">{d}</span>
                     ))}
                   </div>
                 )}
                 {r.cycles > 0 && r.interval && (
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-[12px] text-slate-400">
                     Total: {r.cycles} cycles × {r.interval} days = {r.cycles * r.interval} days treatment
                   </p>
                 )}
-                {r.duration && <p className="mt-2 text-sm text-slate-700"><b>Duration:</b> {r.duration}</p>}
-                {r.notes && <p className="mt-1 text-sm text-slate-600">{r.notes}</p>}
-                {r.reference && <p className="mt-1 text-xs text-slate-400">Reference: {r.reference}</p>}
+                {r.duration && <p className="mt-2 text-[13px] text-slate-600"><b className="text-slate-800">Duration:</b> {r.duration}</p>}
+                {r.notes && <p className="mt-1 text-[13px] text-slate-500">{r.notes}</p>}
+                {r.reference && <p className="mt-1 text-[11px] text-slate-400">Reference: {r.reference}</p>}
               </div>
             );
           })}
@@ -608,18 +644,18 @@ function FeatureImportanceCard({ fi }: { fi: Record<string, number> }) {
   const max = entries[0][1];
   return (
     <div className="card">
-      <h2 className="text-lg font-semibold text-slate-900">📈 Feature Importance</h2>
+      <CardHeading icon={BarChart3}>Feature Importance</CardHeading>
       <div className="mt-3 space-y-2">
         {entries.map(([k, v]) => {
           const pct = ((v / max) * 100).toFixed(0);
           const label = FI_LABELS[k] || k.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
           return (
-            <div key={k} className="grid grid-cols-[140px_1fr_60px] items-center gap-2 text-sm">
-              <div className="truncate text-slate-600">{label}</div>
-              <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                <div className="h-full rounded-full bg-blue-500" style={{ width: `${pct}%` }} />
+            <div key={k} className="grid grid-cols-[140px_1fr_44px] items-center gap-2 text-[13px]">
+              <div className="truncate text-slate-500">{label}</div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
+                <div className="h-full rounded-full bg-brand-600" style={{ width: `${pct}%` }} />
               </div>
-              <div className="text-right text-xs text-slate-500">{(v * 100).toFixed(1)}%</div>
+              <div className="text-right text-[11px] tabular-nums text-slate-400">{(v * 100).toFixed(1)}%</div>
             </div>
           );
         })}
@@ -632,4 +668,4 @@ function cap(s?: string | null) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
 }
 
-export { Badge, badgeClass };
+export { Badge, badgeClass, CardHeading };
