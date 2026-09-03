@@ -1,0 +1,792 @@
+{
+  "_note": "Offline fallback snapshot fetched verbatim from the ClinicalTrials.gov v2 API. Recruiting status was accurate at fetch time and WILL drift — the live API is always tried first and this file is used only when that call fails. Eligibility text is the registry's own criteria, truncated to 1500 characters for size. Verify any trial against clinicaltrials.gov before clinical use.",
+  "source": "https://clinicaltrials.gov/api/v2/studies",
+  "fetchedAt": "2026-09-03T10:25:40.040Z",
+  "conditionsQueried": [
+    "Breast Cancer",
+    "Non-Small Cell Lung Cancer",
+    "Colorectal Cancer",
+    "Glioblastoma",
+    "Ovarian Cancer",
+    "Pancreatic Cancer",
+    "Gastric Cancer",
+    "Prostate Cancer"
+  ],
+  "trials": [
+    {
+      "nctId": "NCT05020574",
+      "title": "Microbiome and Association With Implant Infections",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Breast Cancer",
+        "Breast Cancer Female",
+        "Genetic Predisposition to Disease"
+      ],
+      "sex": "FEMALE",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n1. Patients must have histologically confirmed breast malignancy OR genetic predisposition to breast cancer.\n2. Age \\>= 18 years\n3. Scheduled to undergo mastectomy with the immediate placement of tissue expanders or implant placement\n4. Ability to understand a written informed consent document, and the willingness to sign it\n5. At least 4 weeks post-completion of chemotherapy or radiation therapy.\n\nExclusion Criteria:\n\n1. Any significant medical condition or laboratory abnormalities, which places the subject at unacceptable risk if he/she were to participate in the study\n2. Pregnant or breastfeeding\n3. Patients who have taken antibiotics within 90 days of the consent date\n4. Patients who have taken probiotics within 90 days of the consent date\n5. Patients who have a documented or reported allergic reaction to the outlined antibiotics to be used in this study\n6. Male patients",
+      "locations": [
+        {
+          "facility": "University of California, San Francisco",
+          "city": "San Francisco",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT06404697",
+      "title": "Boost Irradiation to the Supraclavicular Area Among High Risk cN3c Breast Cancer Patients",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Breast Cancer"
+      ],
+      "sex": "FEMALE",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n* Voluntary participation with documented informed consent.\n* Females aged ≥18 years.\n* Histological or cytological confirmed primary breast carcinoma.\n* Clinical diagnosis of cN3c.\n* Receipt of neoadjuvant therapy, guided by the attending physician and current treatment guidelines.\n* Did not achieve cCR in SCLN following neoadjuvant therapy.\n* Undergoing curative-intent breast cancer surgery post-neoadjuvant therapy.\n* Pathological evaluation of axillary lymph nodes post-surgery.\n* KPS score ≥80, with expected survival exceeding 2 years.\n* Complete healing of surgical incision without complications.\n* Negative pathological surgical margins.\n* Availability of hormonal receptor (ER/PR), HER2, and Ki-67 status for the primary breast lesion.\n* Pre-menopausal females required to practice contraception for at least one month prior to screening, maintaining contraception throughout the study and for a specified period post-study cessation.\n\nExclusion Criteria:\n\n* Patients with confirmed distant metastases by pathology or imaging.\n* Those who have not received neoadjuvant systemic therapy.\n* Patients who have not undergone curative-intent surgery.\n* Pregnant or lactating women.\n* Individuals with severe non-neoplastic comorbidities affecting radiotherapy implementation.\n* History of malignancy within the past 5 years (excluding ductal carcinoma in situ, basal cell carcinoma, squamous cell carcinoma in situ, cervical carcinoma in situ, and in situ adenocarcinoma \n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Ruijin hospital, Shanghai jiaotong university school of medicine",
+          "city": "Shanghai",
+          "country": "China"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT04501523",
+      "title": "A Prospective, Phase II Trial Using ctDNA to Initiate Post-operation Boost Therapy After NAC in TNBC",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Triple-negative Breast Cancer"
+      ],
+      "sex": "FEMALE",
+      "minAgeYears": 18,
+      "maxAgeYears": 80,
+      "eligibilityText": "Inclusion Criteria:\n\n* Must have histologically or cytologically confirmed triple negative (ER-/PR-/HER2-) invasive breast cancer, clinical stage II-III at diagnosis (AJCC 6th edition) based on initial evaluation by physical examination and/or breast imaging prior to study registration.ER and PR will be considered negative if ≤ 1% of cells stain weakly positive. HER2 will be considered negative if scored 0 or 1+ by immunohistochemistry (IHC) or 2+ by IHC associated with a fluorescence in situ hybridization (FISH) ratio of \\< 2.0 or \\< 6 copies per cell.\n* Must receive preoperative (neoadjuvant) chemotherapy. NOTE: Acceptable preoperative regimens include those recommended by NCCN guidelines. Participants who received preoperative therapy as part of a clinical trial may enroll.\n* ctDNA positive at baseline, after NAC or after surgery\n* Eastern Cooperative Oncology Group (ECOG) performance status 0, 1 or 2\n* Written informed consent to provide research blood samples and tumor samples\n* Patients must be willing to have frequent blood tests (every 3 months ) and receive a 12 month course of tislelizumab if randomised to tislelizumab treatment on ctDNA detection\n* No evidence of distant metastatic disease on staging scans conducted at the time of diagnosis\n\nExclusion Criteria:\n\n* Previously participated in other interventional trials\n* Previous malignancy within 3 years of breast cancer diagnosis\n* Pregnancy or breastfeeding\n* No written consent\n* Unable to receive standard NAC an\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Sunyat-sen Memorial Hospital",
+          "city": "Guandong",
+          "country": "China"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT07638891",
+      "title": "A Study of HDM2020 in Patients With Advanced Sq-NSCLC",
+      "phase": "Phase 1",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Squamous Non-small Cell Lung Cancer(NSCLC)"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": 75,
+      "eligibilityText": "Inclusion Criteria:\n\n1. Participants who are able to understand and voluntarily sign a written Informed Consent Form (ICF) approved by an Institutional Review Board (IRB) or Independent Ethics Committee (IEC), or their legally authorized representative (LAR), if applicable.\n2. Male or female participants aged 18 to 75 years.\n3. Participants must have histologically or cytologically confirmed locally advanced (Stage IIIB/IIIC) or metastatic (Stage IV) squamous non-small cell lung cancer (sqNSCLC) that is not amenable to curative surgical resection, staged according to the 8th edition of the Union for International Cancer Control (UICC) and American Joint Committee on Cancer (AJCC) TNM staging system for lung cancer, and must have experienced treatment failure or intolerance to adequate prior standard-of-care therapy, including platinum-based chemotherapy and anti-PD-1/PD-L1 therapy. The anti-PD-1/PD-L1 therapy may have been administered as combination therapy or sequential therapy, or as neoadjuvant and/or adjuvant therapy (if a participant received neoadjuvant or adjuvant therapy and experienced relapse or progression during treatment or within 6 months of treatment completion, such therapy will be considered as failure of first-line standard-of-care treatment).\n4. Participants must provide archival or fresh tumor tissue samples for prospective FGFR2b expression testing; only participants with FGFR2b high-expression are eligible for enrollment.\n5. Eastern Cooperative Oncology\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Guangdong Provincial People's Hospital",
+          "city": "Guangzhou",
+          "country": "China"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT07070440",
+      "title": "DZD6008 Combination Therapy in Patients With Locally Advanced or Metastatic NSCLC With EGFR Mutation (TIAN-SHAN7)",
+      "phase": "Phase 1/2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Non Small Cell Lung Cancer"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n1. Signed informed consent.\n2. Age ≥18 years old.\n3. Locally advanced or metastatic non-squamous non-small cell lung cancer by histopathology or cytology, not suitable for other radical treatment.\n4. Documentation of EGFR sensitizing mutation confirmed by local laboratory.\n5. Provide sufficient tumor tissue samples and plasma samples for retrospective analysis of EGFR mutations by central laboratory.\n6. Failure of prior 3 generations EGFR TKI or treatment naive.\n7. ECOG status score 0-1, life expectancy ≥12 weeks.\n8. No central nervous system symptoms during screening, no need for corticosteroids or dehydration diuretic treatment for at least 4 weeks before the first dosing. If the patient with brain metastasis has received radiotherapy or surgery, there is a washout period of ≥2 weeks before the first use of DZD6008 and ensure that the AE related to radiotherapy or surgery has recovered to ≤ 1 grade.\n9. Presence of measurable lesions defined by RECIST 1.1.\n10. Sufficient bone marrow or other organ reserve before first dosing.\n\nExclusion criteria\n\n1. Histology mixed with small cell lung cancer (SCLC) or with SCLC transformation.\n2. Received the following treatments or had the following lifestyle habits, etc.:\n\n   * Received immunotherapy or other antibody treatments (including EGFR-targeted antibodies, bispecific antibodies or antibody-drug conjugates, etc.) within 4 weeks before the first study drug administration.\n   * Received any cytotoxic chemotherap\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Shanghai Chest Hospital",
+          "city": "Shanghai",
+          "country": "China"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT07169552",
+      "title": "HC010 in First-line PD-L1 Positive Advanced NSCLC Patients",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "NSCLC"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n* 1\\. Voluntarily participate in the study, communicate well with investigators, understand and voluntarily complete the study process according to this protocol, and sign the informed consent form (ICF).\n* 2\\. Male or female, aged ≥ 18 years at the time of signing the informed consent form.\n* 3\\. Histologically or cytologically confirmed locally advanced or metastatic (stage IIIb\\~IV) NSCLC (United States Cancer Confederation \\[AJCC\\] 8th edition), positive PD-L1 expression confirmed by IHC with central laboratory or local test results.\n* 4\\. Not previously receiving systemic therapy for locally advanced or metastatic NSCLC; not allowed if the last dose of prior treatment is \\<6 months from disease recurrence in subjects who received prior adjuvant or neoadjuvant therapy.\n* 5\\. No EGFR mutation/ROS1 rearrangement/ALK rearrangement. If other targeted mutations such as BRAF V600E mutation/NTRK1/2/3 gene fusion/MET14 exon skipping mutation/RET rearrangement positive are known, they will not be included in this study if the corresponding targeted therapy drugs have been approved.\n* 6\\. Expected survival ≥ 3 months.\n* 7.There should be at least one measurable lesion according to RECIST v1.1; radiotherapy-experienced lesions may not be selected as target lesions, unless the radiotherapy lesion is the only measurable lesion and clearly progresses based on imaging judgment.\n* 8\\. Eastern Cooperative Oncology Group (ECOG) performance status scored 0 or 1 in the U\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Shanghai East Hospital",
+          "city": "Shanghai",
+          "country": "China"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT07023289",
+      "title": "A Study to Assess Adverse Events and Change in Disease Activity in Adult Participants Receiving Intravenously Infused Telisotuzumab Adizutecan Alone or With Standard of Care in Participants With Post Adjuvant Circulating Tumor DNA Positive Colorectal Cancer and No Radiographic Evidence of Disease",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Colorectal Cancer"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n* Has histologically or cytologically confirmed adenocarcinoma of the colon or rectum.\n* Surgical tumor material should be available for Signatera ctDNA personalized panel design.\n* Must have received at least 3 months of platinum-based doublet adjuvant and/or neoadjuvant chemotherapy but may not have been treated with topoisomerase inhibitors as part of adjuvant therapy.\n* Has no radiographic evidence of disease (NED) confirmed by chest, abdominal, and pelvic computed tomography (CT) scans within 6 weeks prior to Cycle 1 Day 1 (C1D1) dosing.\n* Circulating tumor deoxyribonucleic acid (ctDNA) positive within 1 year either after the end of adjuvant therapy or after tumor resection in subjects who are receiving neoadjuvant therapy and begin treatment within 6 weeks after ctDNA positivity is confirmed (reported).\n* For participants with rectal cancer a total of at least 3 months of perioperative and/or adjuvant platinum-based doublet must have been administered. Please note that short course radiation or long-course chemoradiation does not count towards this 3-month minimum of platinum-doublet perioperative and/or adjuvant therapy.\n\nExclusion Criteria:\n\n* No availability of surgical tissue sample.\n* History of interstitial lung disease (ILD) or pneumonitis that required treatment with systemic steroids, or any evidence of active ILD or pneumonitis on screening chest computed tomography (CT) scan.",
+      "locations": [
+        {
+          "facility": "Clearview Cancer Institute - Huntsville - Cci Drive /ID# 278621",
+          "city": "Huntsville",
+          "country": "United States"
+        },
+        {
+          "facility": "Providence Medical Foundation - Fullerton /ID# 274207",
+          "city": "Fullerton",
+          "country": "United States"
+        },
+        {
+          "facility": "USC Norris Comprehensive Cancer Center /ID# 274550",
+          "city": "Los Angeles",
+          "country": "United States"
+        },
+        {
+          "facility": "Mayo Clinic Hospital Jacksonville /ID# 274472",
+          "city": "Jacksonville",
+          "country": "United States"
+        },
+        {
+          "facility": "Moffitt Cancer Center /ID# 274372",
+          "city": "Tampa",
+          "country": "United States"
+        },
+        {
+          "facility": "University of Chicago Medical Center /ID# 274742",
+          "city": "Chicago",
+          "country": "United States"
+        },
+        {
+          "facility": "Johns Hopkins Hospital /ID# 275645",
+          "city": "Baltimore",
+          "country": "United States"
+        },
+        {
+          "facility": "Massachusetts General Hospital /ID# 273608",
+          "city": "Boston",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT05286814",
+      "title": "PDS01ADC in Combination With Hepatic Artery Infusion Pump (HAIP) and Systemic Therapy for Subjects With Metastatic Colorectal Cancer, Intrahepatic Cholangiocarcinoma, or Metastatic Adrenocortical Carcinoma",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Metastatic Colorectal Cancer (Mcrc)",
+        "Intrahepatic Cholangiocarcinoma (Icc)",
+        "Intrahepatic Bile Duct Cancer",
+        "Colorectal Neoplasms",
+        "Colorectal Cancer",
+        "Cholangiocarcinoma",
+        "Bile Duct Neoplasms",
+        "Bile Duct Cancer",
+        "Adrenocortical Carcinoma (ACC)",
+        "Adrenal Cortical Carcinoma",
+        "Adrenal Gland Cancer",
+        "Adrenal Gland Neoplasms",
+        "Adrenal Cortex Neoplasms"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": 120,
+      "eligibilityText": "* INCLUSION CRITERIA:\n\nInclusion Criteria- All Cohorts\n\n* Participants must have a documented diagnosis of one of the following cancers:\n\n  * Metastatic colorectal cancer (mCRC)\n  * Intrahepatic cholangiocarcinoma (ICC)\n  * Adrenocortical carcinoma (ACC) with liver dominant disease\n* Participants must have an identified medical oncologist who has recommended and is planning to oversee treatment with one of the following standard chemotherapy regimens (based on disease type) not to begin sooner than 28 days after initiation of study-directed HAIP intervention:\n\n  * mCRC: FOLFOX or FOLFIRI\n  * ICC: GemOx or FOLFOX\n  * ACC: GemOx\n* Age \\>= 18 years.\n* Negative serum or urine pregnancy test at screening for individuals of childbearing potential (IOCBP).\n\nNOTE: IOCBP is defined as any individual who has experienced menarche and who has not undergone successful surgical sterilization or who is not postmenopausal. IOCBP must have a negative pregnancy test (HCG blood or urine) during screening.\n\n* All participants (regardless of childbearing potential) must agree to use highly effective contraception prior to study entry, for the duration of study participation, and for 3 months after completion of study treatment for those able to father a child or 6 months after completion of study treatment for those of child-bearing potential (i.e., IOCBP). Highly effective birth control (failure rate of less than 1%), e.g., intrauterine device (IUD), intrauterine hormone-releasing system (IUS), \n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "National Institutes of Health Clinical Center",
+          "city": "Bethesda",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT07189871",
+      "title": "177Lu-BetaBart in Patients With Relapsed/Refractory, Locally Advanced Inoperable, or Metastatic Solid Tumors",
+      "phase": "Phase 1/2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Castration-Resistant Prostate Cancer (CRPC)",
+        "Colorectal Cancer",
+        "NSCLC (Non-small Cell Lung Cancer)",
+        "Ovarian Cancer",
+        "Cervical Cancer",
+        "Endometrial Cancer",
+        "TNBC, Triple Negative Breast Cancer",
+        "Small Cell Lung Cancer (SCLC )",
+        "Head &Amp; Neck Squamous Cell Carcinoma (HNSCC)",
+        "Esophageal Squamous Cell Carcinoma (ESCC)"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n1. Willing and able to provide informed consent prior to start of any study procedures and assessments and must be willing to comply with all study procedures.\n2. Participants ≥ 18 years of age.\n3. Participants with a documented history of histopathologically confirmed CRPC\\*, CRC, NSCLC, SCLC, HNSCC, ovarian cancer, cervical cancer, endometrial cancer, TNBC, or ESCC. (Note: inclusion or exclusion criteria below marked with \\* refer to CRPC only, criteria without \\* refer to all tumor indications including CRPC)\n\n   a. \\*Progressive CRPC defined as castrate levels of testosterone and progressing by at least one of the following criteria: i. Serum PSA progression consisting of two consecutive increases in PSA measured at least 1 week apart. The minimal baseline value is 2.0 ng/mL.\n\n   ii. Soft tissue progression defined as a ≥20% increase in the sum of the diameter (short axis for nodal lesions and long axis for non-nodal lesions) of all target lesions based on the smallest sum of the diameter since the previous treatment was started or the appearance of one or more new lesions by computed tomography (CT)/magnetic resonance imaging (MRI).\n\n   iii. Progression of bone disease defined by Prostate Cancer Working Group 3 (PCWG3) as evaluable disease or new bone lesions by bone scan.\n\n   iv. Identification of new soft tissue or bone lesions on prostate-specific membrane antigen (PSMA) positron emission tomography (PET) imaging.\n\n   b. \\*Metastatic disease defin\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Dothan Hematology & Oncology",
+          "city": "Dothan",
+          "country": "United States"
+        },
+        {
+          "facility": "BAMF Health",
+          "city": "Grand Rapids",
+          "country": "United States"
+        },
+        {
+          "facility": "Nebraska Cancer Specialists",
+          "city": "Omaha",
+          "country": "United States"
+        },
+        {
+          "facility": "XCancer",
+          "city": "Omaha",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT02977780",
+      "title": "INdividualized Screening Trial of Innovative Glioblastoma Therapy (INSIGhT)",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Glioblastoma"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n* Participants must have histologically confirmed intracranial glioblastoma or gliosarcoma following maximum surgical resection. Tumors primarily localized in the infratentorial compartment will be excluded.\n* Participants may have had prior surgery for glioblastoma or gliosarcoma but no systemic or radiation therapy.\n* Age ≥ 18 years.\n* Karnofsky performance status ≥60\n* Participants must have normal organ and marrow function as defined below:\n\n  * Leukocytes ≥3,000/mL\n  * Absolute neutrophil count ≥1,500/mL\n  * Platelets ≥100,000/mL\n  * Hemoglobin ≥ 9g/dl\n  * Total bilirubin within normal institutional limits (except for participant's with Gilbert's disease)\n  * AST(SGOT)/ALT(SGPT) ≤ 2.5 × institutional upper limit of normal\n  * Creatinine ≤ institutional upper limit of normal OR\n  * Creatinine clearance ≥ 60 mL/min/1.73 m2 for participants with creatinine levels above institutional normal.\n  * Potassium within normal institutional range, or correctable with supplements\n  * Serum amylase ≤ 1.5 x institutional upper limit of normal\n  * Serum lipase ≤ 1.5 x institutional upper limit of normal\n  * INR \\< 2.0\n  * PTT ≤ institutional upper limit of normal, unless receiving therapeutic low molecular weight heparin\n* Must be able to swallow pills.\n* Participants must plan to begin radiation therapy 14-42 days after surgical resection.\n* Immunohistochemically negative for IDH1 R132H mutation.\n* Evidence that the tumor MGMT promoter is unmethylated by standard o\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "University of Alabama at Birmingham",
+          "city": "Birmingham",
+          "country": "United States"
+        },
+        {
+          "facility": "Massachusetts General Hospital",
+          "city": "Boston",
+          "country": "United States"
+        },
+        {
+          "facility": "Dana Farber Cancer Institute",
+          "city": "Boston",
+          "country": "United States"
+        },
+        {
+          "facility": "Mayo Clinic",
+          "city": "Rochester",
+          "country": "United States"
+        },
+        {
+          "facility": "Columbia University Medical Center",
+          "city": "New York",
+          "country": "United States"
+        },
+        {
+          "facility": "Memorial Sloan Kettering Cancer Center",
+          "city": "New York",
+          "country": "United States"
+        },
+        {
+          "facility": "Cleveland Clinic",
+          "city": "Cleveland",
+          "country": "United States"
+        },
+        {
+          "facility": "University of Pittsburgh Medical Center",
+          "city": "Pittsburgh",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT02861898",
+      "title": "Super-selective Intra-arterial Repeated Infusion of Cetuximab for the Treatment of Newly Diagnosed Glioblastoma",
+      "phase": "Phase 1/2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Glioblastoma",
+        "Brain Cancer",
+        "Brain Neoplasm",
+        "Brain Tumor",
+        "Brain Neoplasm, Malignant",
+        "EGFR Gene Overexpression",
+        "GBM"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n* Male or female patients of ≥18 years of age.\n* Patients with a documented histologic diagnosis of newly diagnosed glioblastoma multiforme (GBM)\n* Patients with pathology confirmed histologic EGFR overexpression\n* Patients must have at least one confirmed and evaluable tumor site.∗\n\n  \\*A confirmed tumor site is one in which is biopsy-proven. NOTE: Radiographic procedures (e.g., Gd-enhanced MRI or CT scans) documenting existing lesions must have been performed within two weeks of treatment on this research study.\n* Patients must have a Karnofsky performance status ≥70% (or the equivalent ECOG level of 0-2) and an expected survival of ≥ three months.\n* No chemotherapy for two weeks prior to treatment under this research protocol and no external beam radiation for eight weeks prior to treatment under this research protocol.\n* Patients must have adequate hematologic reserve with WBC≥3000/mm3, absolute neutrophils ≥1500/mm3 and platelets ≥100,000/ mm3. Patients who are on Coumadin must have a platelet count of ≥150,000/ mm3\n* Pre-enrollment chemistry parameters must show: bilirubin\\<1.5X the institutional upper limit of normal (IUNL); AST or ALT\\<2.5X IUNL and creatinine\\<1.5X IUNL.\n* Pre-enrollment coagulation parameters (PT and PTT) must be ≤1.5X the IUNL.\n* Patients must agree to use a medically effective method of contraception during and for a period of three months after the treatment period. A pregnancy test will be performed on each premenopausal fem\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Lenox Hill Brain Tumor Center",
+          "city": "New York",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT07195591",
+      "title": "Beginning Radiation Immediately With GammaTile at GBM Excision Versus Standard of Care",
+      "phase": "Phase 3",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Glioblastoma"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Major Criteria Includes the Following:\n\nInclusion Criteria\n\n* Patients must be ≥18 years of age.\n* Have radiographic suspicion of newly diagnosed glioblastoma (GBM).\n\n  o If final pathology reports IDH mutant glioma, then the patients found to have an IDH mutation will be followed for safety and QoL measures but will not be included in the primary and secondary comparative survival and efficacy analyses.\n* Are medically and surgically appropriate for resection.\n* Have an estimated Karnofsky Performance Scale (KPS) score of ≥70.\n* Are able to receive standard of care treatment.\n\nExclusion Criteria\n\n* A previous biopsy diagnosis other than IDH wild-type GBM.\n* Have contraindications to TMZ, magnetic resonance imaging, gadolinium, or non-contrast computed tomography.\n* Have multi-focal enhancing tumors that cannot be encompassed in one operative field.",
+      "locations": [
+        {
+          "facility": "HonorHealth Scottsdale Osborn Medical Center",
+          "city": "Scottsdale",
+          "country": "United States"
+        },
+        {
+          "facility": "Johns Hopkins University",
+          "city": "Baltimore",
+          "country": "United States"
+        },
+        {
+          "facility": "Jersey Shore University Medical Center | Hackensack",
+          "city": "Neptune City",
+          "country": "United States"
+        },
+        {
+          "facility": "Westchester Medical Center",
+          "city": "Valhalla",
+          "country": "United States"
+        },
+        {
+          "facility": "East Carolina University",
+          "city": "Greenville",
+          "country": "United States"
+        },
+        {
+          "facility": "Allegheny Health Network",
+          "city": "Pittsburgh",
+          "country": "United States"
+        },
+        {
+          "facility": "Brown University Health",
+          "city": "Providence",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT06504147",
+      "title": "A Study of Radspherin® in Patients With Primary Advanced Epithelial Cancer, With Peritoneal Metastasis That Are Homologous Recombination Proficient Scheduled to Undergo Neoadjuvant Chemotherapy and Interval Debulking Surgery",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Peritoneal Carcinomatosis",
+        "Ovarian Cancer"
+      ],
+      "sex": "FEMALE",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n1. Able and willing to provide written informed consent and to comply with the clinical study protocol (CSP).\n2. Female of age ≥ 18 years.\n3. Patients with primary advanced high-grade serous or high-grade endometrioid epithelial ovarian, fallopian tube, or primary peritoneal cancer (FIGO Stage IIIB/C or IV).\n4. Peritoneal and other metastases eligible for IDS to no residual tumour.\n5. Adverse events recovered to at least Grade 1 from the effects (excluding alopecia) of any prior medical therapy for malignancy.\n6. Confirmed HR proficient tumour.\n7. Received NACT (numbers of cycles as per investigator's discretion) with regress or stable disease on diagnostic imaging and assessed to be operable to R0 pre-surgery.\n8. Eastern Cooperative Oncology Group (ECOG) Performance Status Score of 0 to 2 and patient fit enough to undergo IDS and further treatment according to standard of care.\n9. Adequate renal function:\n\n   • Calculated creatinine clearance using the Cockcroft-Gault formula ≥ 40 ml/min or measured creatinine clearance ≥ 40 ml/min.\n10. Adequate hepatic function:\n\n    * Serum bilirubin \\< 1.5 x upper limit of normal (ULN), and\n    * Aspartate transaminase and alanine transaminase ≤ 3 x ULN.\n11. Adequate bone marrow function:\n\n    * Absolute neutrophil count ≥ 1.0 x 10\\^9/l, and\n    * Platelets ≥ 100 x 10\\^9/l, and\n    * Haemoglobin ≥ 9 g/dL.\n12. For females of childbearing potential, a negative pregnancy test must be documented prior to enrolment.\n13. Fo\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Moffitt Cancer Center",
+          "city": "Tampa",
+          "country": "United States"
+        },
+        {
+          "facility": "UZ Leuven",
+          "city": "Leuven",
+          "country": "Belgium"
+        },
+        {
+          "facility": "Fondazione Policlinico Universitario A. Gemelli IRCCS",
+          "city": "Roma",
+          "country": "Italy"
+        },
+        {
+          "facility": "The Norwegian Radiumhospital",
+          "city": "Oslo",
+          "country": "Norway"
+        },
+        {
+          "facility": "Hospital Universitari de Bellvitge",
+          "city": "Barcelona",
+          "country": "Spain"
+        },
+        {
+          "facility": "Clinica Universidad de Navarra",
+          "city": "Madrid",
+          "country": "Spain"
+        },
+        {
+          "facility": "Clinica Universidad de Navarra",
+          "city": "Pamplona",
+          "country": "Spain"
+        },
+        {
+          "facility": "Hospital Universitari i Politècnic La Fe",
+          "city": "Valencia",
+          "country": "Spain"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT05983276",
+      "title": "Decitabine and Selinexor in Combination to Reverse Drug Resistance With Standard Chemotherapy in Ovarian Cancer",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Ovarian Cancer"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n* Participants must be greater than or equal to 18 years of age\n* Participants must have an Eastern Cooperative Oncology Group (ECOG) Performance Status PS less than or equal to 2.\n* Participants must have histological or cytological proven epithelial ovarian cancer, fallopian tube or primary peritoneal carcinoma with relapse or disease progression after prior treatment by exam, computed tomography (CT), PET/CT, or magnetic resonance imaging (MRI) may be enrolled. All cell types including clear cell carcinoma are eligible.\n* Participants must have failed or relapsed after a platinum and taxane containing combination\n* Participants must have adequate hepatic function\n* Participants must have adequate renal function\n* Participants must be able to swallow and retain oral medications\n* Participants must have measurable disease according to Gynecologic Cancer Intergroup CA125 criteria\n* Participants with stable (for 2 months or longer), treated (by radiotherapy) CNS metastases are eligible\n* Participants with active hepatitis B virus (Hep B) are allowed if antiviral therapy for hepatitis B has been given for greater than 8 weeks.\n\nExclusion Criteria:\n\n* Participants must not have received Selinexor or another XPO1 inhibitor previously.\n* Participants must not have had any concurrent medical condition or disease (eg, uncontrolled active hypertension, uncontrolled active diabetes, active systemic infection, etc.)\n* Participants must not have uncontrolled active \n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Loyola University Medical Center",
+          "city": "Maywood",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT06815497",
+      "title": "Telmisartan in Combination With Cytotoxic Regimens in Platinum-Resistant Ovarian Cancer",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Ovarian Cancer"
+      ],
+      "sex": "FEMALE",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n* ≥18 years of age\n* Eastern Cooperative Oncology Group (ECOG) performance status of 0, 1 or 2\n* Able and willing to provide informed consent.\n* Histologically proven high-grade serous ovarian carcinomas (HGSOC)\n* Platinum-resistant or refractory ovarian cancer (OC) defined as progression of disease on carboplatin or growth of disease as detected on computed tomography (CT) scan within 6 months of last platinum treatment\n* To receive the allowable standard of care (SOC) chemotherapy regimens for OC\n* Life expectancy ≥2 months\n* Adequate organ and bone marrow reserve function as indicated by the following:\n* Adequate hematological function, defined as absolute neutrophil count (ANC) ≥1.5 x 10\\^9/L, platelet count ≥100 x 10\\^9/L, and hemoglobin ≥8 g/dL without recent transfusion (defined as a transfusion that has occurred within 2 weeks of the hemoglobin measurement)\n* Adequate liver function, defined as total bilirubin level ≥1.5 x institutional upper limit of normal (IULN), aspartate aminotransferase (AST) ≤ 2.5 x IULN, and alanine aminotransferase (ALT) ≤ 2.5 x IULN\n* Adequate renal function defined as creatinine ≤ 1.5 x IULN or measured or calculated creatinine clearance ≥ 40 mL/min per institutional standard. Assessment methods must be recorded.\n* Adequate coagulation, defined as international normalized ratio (INR) or prothrombin time ≤ 1.5 x IULN and activated partial thromboplastin time (aPTT) ≤ 1.5 x IULN (unless patient receiving anticoagulant the\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Dartmouth Hitchcock",
+          "city": "Lebanon",
+          "country": "United States"
+        },
+        {
+          "facility": "Dartmouth-Hitchcock Manchester",
+          "city": "Manchester",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT06951997",
+      "title": "QL1706 Plus Chidamide, AG as First-line Treatment for Metastatic Pancreatic Cancer",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Metastatic Pancreatic Cancer"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": 75,
+      "eligibilityText": "Inclusion Criteria:\n\n* Understand and voluntarily sign the informed consent form for this study\n* Age ≥18 years and ≤ 75 years, ale or Female\n* Histologically or cytologically confirmed diagnosis of pancreatic cancer (originating from the pancreatic ductal epithelium), with clinical records showing metastatic pancreatic cancer (stage IV according to the AJCC 8th edition TNM staging of pancreatic cancer)\n* No prior anti-tumor treatment (radiotherapy, chemotherapy, targeted therapy, immunotherapy, etc.) received\n* At least one measurable lesion on imaging according to RECIST 1.1\n* ECOG score 0-1\n* Expected survival time ≥3 months\n* Adequate organ function, subjects must meet the following laboratory criteria:Platelet count ≥90x10\\^9/L,White blood cell count ≥ 3.5 × 10⁹/L,Absolute neutrophil count (ANC) ≥1.5x10\\^9/L,Hemoglobin \\> 90g/L,Aspartate aminotransferase (AST) and alanine aminotransferase (ALT) ≤ 2.5 times ULN,Total bilirubin ≤ 1.5 ULN,Urea/Urea nitrogen (BUN) and creatinine (Cr) ≤ 1.5 × ULN (and creatinine clearance rate (CCr) ≥ 50 mL/min),Left ventricular ejection fraction (LVEF) ≥ 50%,QTcF interval (Fridericia correction) \\< 470 ms\n* Fertile women/non-sterilized men must use effective contraception\n\nExclusion Criteria:\n\n* Inability to comply with the study protocol or procedures\n* patients with pancreatic cancer originating from non-pancreatic ductal epithelium, including pancreatic neuroendocrine carcinoma, pancreatic follicular cell carcinoma, pancreatoblastoma, and\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Tianjin Medical University Cancer Institute and Hospital",
+          "city": "Tianjin",
+          "country": "China"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT07644559",
+      "title": "A Phase 2 Study of VS-7375 in Patients With KRAS G12D-Mutated Pancreatic Cancer",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Pancreatic Ductal Adenocarcinoma (PDAC)",
+        "G12D Mutated KRAS"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n* Histopathology confirmed PDAC\n* Measurable disease per RECIST 1.1\n* Local testing confirmed KRAS G12D mutation (tissue required for confirmatory central testing)\n* ECOG PS=0 or 1\n\nAdequate organ function\n\nVS-7375 + cetuximab (2L PDAC) :\n\n-Received only 1 prior Tx in the metastatic setting; prior adjuvant counts as a line if progressed within 6 months\n\nVS-7375 + cetuximab (1L PDAC) :\n\n-Treatment-naïve or received ≤ 1 cycle of SoC for metastatic disease\n\nExclusion criteria:\n\n* Have any other documented co-existing common RAS mutation(s)\n* Prior anti-cancer Tx within 4 weeks or drug-specific timeline within first treatment dose, whichever shorter\n* Major surgery within 4 weeks of first treatment dose\n* Radiation therapy (RT) within 1 week of first treatment dose; RT to brain or lung within 2 weeks of first treatment dose\n* History of drug-induced Interstitial Lung Disease\n* Receipt of prior direct RAS inhibitor\n* Untreated or symptomatic CNS metastasis\n* Receipt of strong CYP3A4 inhibitor/inducer or CYP3A4 sensitive substrates with narrow therapeutic index within 14 days or drug-specific timeline within first treatment dose, whichever is shorter\n* Receipt of PPI or H2 blocker within 5 days\n* Inability to swallow oral medication\n* Other protocol-defined inclusion/exclusion criteria may apply",
+      "locations": [
+        {
+          "facility": "START- Los Angeles",
+          "city": "Los Angeles",
+          "country": "United States"
+        },
+        {
+          "facility": "Cedars-Sinai Medical Center",
+          "city": "Los Angeles",
+          "country": "United States"
+        },
+        {
+          "facility": "Valkyrie Clinical Trials",
+          "city": "Los Angeles",
+          "country": "United States"
+        },
+        {
+          "facility": "Mayo Clinical Florida",
+          "city": "Jacksonville",
+          "country": "United States"
+        },
+        {
+          "facility": "Moffitt Cancer Center",
+          "city": "Tampa",
+          "country": "United States"
+        },
+        {
+          "facility": "Johns Hopkins University",
+          "city": "Baltimore",
+          "country": "United States"
+        },
+        {
+          "facility": "Massachusetts General Hospital",
+          "city": "Boston",
+          "country": "United States"
+        },
+        {
+          "facility": "Dana-Farber Cancer Institute",
+          "city": "Boston",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT05482893",
+      "title": "Spevatamig (PT886) as Monotherapy or in Combination With Chemo and/or ICI, for the Treatment of Patients With Advanced Gastric, Gastroesophageal Junction, Pancreatic Ductal or Biliary Tract Carcinomas (the TWINPEAK Study)",
+      "phase": "Phase 1/2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Gastric or Gastroesophageal Junction Adenocarcinoma",
+        "Pancreatic Ductal Adenocarcinoma",
+        "Biliary Tract Cancer (BTC)"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Key Inclusion Criteria\n\n1. 18 years or older and able to sign informed consent and comply with the protocol.\n2. Measurable disease as defined by RECIST V1.1 criteria for solid tumors.\n3. 3\\. Part A and Part B: Histologically or cytologically confirmed unresectable advanced or metastatic solid gastric, gastroesophageal junction (GEJ), biliary tract or pancreatic carcinomas previously treated for advanced (metastatic or unresectable) disease or for which treatment is not available or not tolerated.\n\n   Part C, substudy C1: 2L m/a GC/GEJ-C patients will receive Spevatamig (PT886) in combination with Paclitaxel. Patients who are HER2 positive are eligible.\n\n   Part C, substudy C2: 1L m/a PDAC patients will receive Spevatamig (PT886) in combination with Gemcitabine plus nab-Paclitaxel (Abraxane).\n\n   Part C, substudy C3: 1L m/a PDAC patients will receive Spevatamig (PT886) in combination with Gemcitabine plus FOLFIRINOX/mFFX.\n\n   Part C, substudy C4: Patients with m/a BTC who have progressed on 1L SOC chemotherapy (GemCis) ± ICI and are eligible for 2L SOC FOLFOX treatment.\n\n   Part D, substudy D3: 2L or 3L m/a GC/GEJ-C patients will receive Spevatamig (PT886) in combination with KEYTRUDA® (pembrolizumab).\n\n   Part D, substudy D4: 1L HER2 negative m/a GC/GEJ-C patients will receive Spevatamig (PT886) in combination with SOC chemotherapy and KEYTRUDA® (pembrolizumab).\n4. Able to provide a formalin fixed, paraffin embedded (FFPE) tumor tissue sample (preferably fresh biopsy or if no\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "City of Hope (City of Hope National Medical Center, City of Hope Medical Center)",
+          "city": "Duarte",
+          "country": "United States"
+        },
+        {
+          "facility": "USC Norris Comprehensive Cancer Center",
+          "city": "Los Angeles",
+          "country": "United States"
+        },
+        {
+          "facility": "Sarah Cannon Research Institute (SCRI)",
+          "city": "Denver",
+          "country": "United States"
+        },
+        {
+          "facility": "University of Iowa",
+          "city": "Iowa City",
+          "country": "United States"
+        },
+        {
+          "facility": "Norton Cancer Institute",
+          "city": "Louisville",
+          "country": "United States"
+        },
+        {
+          "facility": "Dana-Farber Cancer Institute (DFCI)",
+          "city": "Boston",
+          "country": "United States"
+        },
+        {
+          "facility": "Duke Cancer Center",
+          "city": "Durham",
+          "country": "United States"
+        },
+        {
+          "facility": "University of Pittsburgh Medical Center (UPMC)",
+          "city": "Pittsburgh",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT06947291",
+      "title": "Safety and Efficacy of Glumetinib Combined With Docetaxel for Injection (Albumin-bound) in Patients With Advanced Gastric Cancer/Gastroesophageal Junction Adenocarcinoma and Other Solid Tumors",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Advanced Gastric Cancer/Gastroesophageal Junction Adenocarcinoma and Other Solid Tumors"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n* 1\\. Patients who are able to understand and voluntarily sign the written ICF;\n* 2\\. Male or female patients aged ≥ 18 years (inclusive);\n* 3\\. Patients with advanced solid tumors diagnosed by pathology or cytology;\n* 4\\. Patients with a past medical history showing either negative or positive Her-2 expression can be enrolled. For those with unknown Her-2 expression, the Her-2 status needs to be determined before enrollment. For patients with positive Her-2 expression, their previous treatments should include anti-Her-2 drug therapy.\n* 5\\. Overexpression and/or amplification of MET in tumor tissue specimens/blood samples confirmed by the central laboratory.\n* 6\\. There are measurable lesions or non-measurable but evaluable lesions according to RECIST v1.1.\n* 7\\. The Eastern Cooperative Oncology Group (ECOG) Performance Status (PS) score is 0 or 1.\n* 8\\. The expected survival time is ≥ 3 months.\n* 9\\. The functions of major organs and bone marrow meet the criteria.\n\nExclusion Criteria:\n\n* 1\\. Patients with prior treatment with targeted MET drugs;\n* 2\\. Previous treatments included docetaxel;\n* 3\\. Patients with meningeal metastases, spinal cord compression, symptomatic or progressive brain metastases are not eligible for enrollment.\n* 4\\. Known hypersensitivity or intolerable conditions to any component of the drugs in the study protocol or their excipients.\n* 5\\. According to NCI-CTCAE 5.0, adverse events caused by previous anti-tumor treatment have not \n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Zhejiang Cancer Hospital",
+          "city": "Hangzhou",
+          "country": "China"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT05894824",
+      "title": "T-Dxd in Combination With Ramucirumab as HER2 Low Gastric or Gastroesophageal Junction (GEJ) Adenocarcinoma",
+      "phase": "Phase 1/2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Gastric Cancer",
+        "Gastroesophageal Junction (GEJ) Cancer"
+      ],
+      "sex": "ALL",
+      "minAgeYears": 19,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n1. Able and willing to give written informed consent and has signed the appropriate weitten informed consent form(ICF) prior to performance of any trial activityes.\n2. Eligible male and female subjects aged ≥19 years.\n3. Histologically or cytologically proven metastatic or locally advanced HER2 low gastric or GEJ adenocarcinoma: The definition of HER2 low is 1+ by immunohistochemistry (IHC) or 2+ by IHC and without HER2 gene amplification (negative by in situ hybridization\\[ISH\\]).\n4. Progressed after 1st line palliative treatment. Adjuvant chemotherapy will be counted as 1st line treatment if the cancer has recurred within 6 months of completion of adjuvant chemotherapy.\n5. Has measurable or evaluable disease as determined by RECIST ver 1.1.\n6. ECOG performance status of 0 -1 at trial entry.\n7. Life expectancy ≥12 weeks as judged by the Investigator.\n8. Has LVEF ≥ 50% by either echocardiogram (ECHO) or multigated acquisition (MUGA) scan within 28 days before enrollment.\n9. Adequate baseline organ function defined as:\n\n   * Absolute neutrophil count ≥1500/mm3\n   * Platelets ≥100,000/mm3\n   * Hemoglobin ≥9.0 g/dL\n   * Aspartate aminotransferase (AST) and alanine aminotransferase (ALT) ≤3.0 × upper limit of normal (ULN) of the study site (or ≤5.0 × ULN in patients with liver metastases)\n   * Total bilirubin ≤1.5 × ULN - Serum albumin ≥2.5 g/dL\n   * Creatinine ≤1.5 × ULN or creatinine clearance (either measured value or estimated value using the Cockcroft-Ga\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Sun Young Rha",
+          "city": "Seoul",
+          "country": "South Korea"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT07751159",
+      "title": "Radiation Therapy Approaches for People With Prostate Cancer",
+      "phase": "Phase 2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Prostate Cancer Patients",
+        "Non-metastatic Prostate Cancer",
+        "High Risk Prostate Cancer"
+      ],
+      "sex": "ALL",
+      "minAgeYears": null,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n* Non-metastatic prostate cancer.\n* Classified as unfavorable intermediate-, high-, or very high-risk prostate cancer according to NCCN risk stratification guidelines. (Note: cT3a or T3b by MRI or PSMA PET allowed)\n* Considered by the treating radiation oncologist as a suitable candidate for both HDR brachytherapy boost and SBRT\n\nExclusion Criteria:\n\n* None",
+      "locations": [
+        {
+          "facility": "Memorial Sloan Kettering at Basking Ridge (Limited Protocol Activities)",
+          "city": "Basking Ridge",
+          "country": "United States"
+        },
+        {
+          "facility": "Memorial Sloan Kettering at Monmouth (Limited Protocol Activities)",
+          "city": "Middletown",
+          "country": "United States"
+        },
+        {
+          "facility": "Memorial Sloan Kettering at Bergen (Limited Protocol Activities)",
+          "city": "Montvale",
+          "country": "United States"
+        },
+        {
+          "facility": "Memorial Sloan Kettering Suffolk-Commack (Limited Protocol Activities)",
+          "city": "Commack",
+          "country": "United States"
+        },
+        {
+          "facility": "Memorial Sloan Kettering at Westchester (Limited Protocol Activities)",
+          "city": "Harrison",
+          "country": "United States"
+        },
+        {
+          "facility": "Memorial Sloan Kettering Cancer Center (All Protocol Activites)",
+          "city": "New York",
+          "country": "United States"
+        },
+        {
+          "facility": "Memorial Sloan Kettering at Nassau (Limited Protocol Activities)",
+          "city": "Uniondale",
+          "country": "United States"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT05603559",
+      "title": "177Lu-P17-087/177Lu-P17-088 in Patients With Metastatic Castration-resistant Prostate Cancer",
+      "phase": "Phase EARLY_1",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Metastatic Castration-resistant Prostate Cancer"
+      ],
+      "sex": "MALE",
+      "minAgeYears": 18,
+      "maxAgeYears": 90,
+      "eligibilityText": "Inclusion Criteria:\n\n* All the patients had progressive metastatic castration-resistant prostate cancer that did not respond to androgen-suppression therapy and/or systemic chemotherapy;\n* Distant metastases with high PSMA expression were confirmed on 68Ga-PSMA PET/CT within one week before the injection of 177Lu-P17-087/177Lu-P17-088.\n\nExclusion Criteria:\n\n* Patients were excluded if they had \\[18F\\]FDG positive tumors without corresponding PSMA uptake. Patients were also not eligible if they accepted other radionuclide therapies within 6 months or had clinically significant impaired bone marrow, liver, or kidney function with a hemoglobin level of less than 9.0 g/dL, a white blood cell count of less than 2.5×109/L, a platelet count of less than 100×109/L and a serum creatinine \\> 100 μmol/L.",
+      "locations": [
+        {
+          "facility": "Peking Union Medical College Hospital",
+          "city": "Beijing",
+          "country": "China"
+        }
+      ]
+    },
+    {
+      "nctId": "NCT03424850",
+      "title": "Safety and Efficacy of 21 Gy, 23 Gy and 25 Gy for High Dose Rate (HDR) Prostate Brachytherapy",
+      "phase": "Phase 1/2",
+      "studyType": "INTERVENTIONAL",
+      "status": "RECRUITING",
+      "conditions": [
+        "Prostate Cancer",
+        "Prostate Neoplasm"
+      ],
+      "sex": "MALE",
+      "minAgeYears": 18,
+      "maxAgeYears": null,
+      "eligibilityText": "Inclusion Criteria:\n\n* Histologically or cytologically confirmed diagnosis of early stage prostate cancer.\n* Must be considered either low-risk (T1-T2a, Gleason ≤ 6, PSA \\< 10 ng/mL) or favorable intermediate-risk (Gleason 3 +4 = 7, percentage of positive biopsy cores \\< 50%, no more than one NCCN intermediate risk factor).\n* Prior androgen deprivation therapy is allowed and may have been initiated up to 6 months prior to the date of the HDR implant. The complete duration of androgen deprivation therapy can range from 4 months to 36 months provided it has been initiated no more than 6 months prior to the date of the HDR implant.\n* At least 18 years of age.\n* ECOG performance status ≤ 2\n* Able to understand and willing to sign an IRB approved written informed consent document (or that of legally authorized representative, if applicable).\n\nExclusion Criteria:\n\n* Prior radiation therapy to the prostate or lower pelvis encompassing the prostate.\n* A history of other malignancy ≤ 5 years previous with the exception of basal cell or squamous cell carcinoma of the skin which were treated with local resection only.\n* Currently receiving any other investigational agents.\n* Uncontrolled intercurrent illness including, but not limited to, ongoing or active infection, symptomatic congestive heart failure, unstable angina pectoris, or cardiac arrhythmia.\n* Unable to undergo general, spinal or local anesthesia.\n* Prior TURP with a sufficiently large defect that would compromise the integri\n[…truncated for offline bundle]",
+      "locations": [
+        {
+          "facility": "Washington University School of Medicine",
+          "city": "St Louis",
+          "country": "United States"
+        }
+      ]
+    }
+  ]
+}

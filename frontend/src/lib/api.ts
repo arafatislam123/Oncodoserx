@@ -235,6 +235,100 @@ export interface AnalysisResult {
   };
 }
 
+// ── Trial Match ───────────────────────────────────────────────────────────────
+export interface BiomarkerCall {
+  status: string;
+  variant: string | null;
+  source?: "report" | "ngs";
+}
+
+export interface TmbResult {
+  value: number | null;
+  unit: string | null;
+  category: "high" | "low" | string;
+}
+
+export interface GenomicPanel {
+  genes: Record<string, BiomarkerCall>;
+  tmb: TmbResult | null;
+  msi: string | null;
+  detected: string[];
+}
+
+/** Where each clinical field came from, so the UI can label it. */
+export type FieldSource = "report" | "manual" | "missing";
+
+export interface ClinicalProfile {
+  cancerType: string | null;
+  stage: string | null;
+  ecog: number | null;
+  age: number | null;
+  sex: string | null;
+  priorLines: number | null;
+  biomarkers: Record<string, BiomarkerCall>;
+  tmb: TmbResult | null;
+  msi: string | null;
+  sources: Record<string, FieldSource>;
+}
+
+export interface TrialCriterion {
+  key: string;
+  label: string;
+  detail: string;
+}
+
+export interface TrialLocation {
+  facility: string | null;
+  city: string | null;
+  country: string | null;
+}
+
+export interface MatchedTrial {
+  nctId: string;
+  title: string;
+  phase: string;
+  /** INTERVENTIONAL | OBSERVATIONAL — observational studies are not treatment options. */
+  studyType?: string | null;
+  status: string;
+  conditions: string[];
+  sex: string;
+  minAgeYears: number | null;
+  maxAgeYears: number | null;
+  locations: TrialLocation[];
+  score: number;
+  met: TrialCriterion[];
+  notMet: TrialCriterion[];
+  unknown: TrialCriterion[];
+}
+
+export interface ClinicalProfileResult {
+  success: boolean;
+  profile: ClinicalProfile;
+  genomic: GenomicPanel | null;
+  latestReport: { id: string; filename: string; created_at: string } | null;
+  disclaimer: string;
+}
+
+export interface TrialMatchResult {
+  success: boolean;
+  profile: ClinicalProfile;
+  trials: MatchedTrial[];
+  dataSource: "live" | "cache" | "fallback";
+  dataSourceError: string | null;
+  totalConsidered: number;
+  disclaimer: string;
+}
+
+export interface ClinicalProfileUpdate {
+  cancerType?: string | null;
+  stage?: string | null;
+  ecog?: number | string | null;
+  age?: number | string | null;
+  sex?: string | null;
+  priorLines?: number | string | null;
+  genomic?: GenomicPanel | null;
+}
+
 class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -326,6 +420,34 @@ export const api = {
     if (cancerType) fd.append("cancerType", cancerType);
     if (pastedText) fd.append("pastedText", pastedText);
     return request<AnalysisResult>(`/analyze-multi`, { method: "POST", body: fd });
+  },
+
+  // Trial Match — the clinical profile is re-derived server-side from the
+  // patient's latest report, then layered with saved clinician corrections.
+  getClinicalProfile: (id: string) => request<ClinicalProfileResult>(`/patients/${id}/clinical`),
+
+  updateClinicalProfile: (id: string, data: ClinicalProfileUpdate) =>
+    request<{ success: true; profile: ClinicalProfile; genomic: GenomicPanel | null }>(
+      `/patients/${id}/clinical`,
+      { method: "PUT", body: JSON.stringify(data) }
+    ),
+
+  // `genomic` lets a just-extracted panel be used for matching before the
+  // clinician commits it to the record.
+  matchTrials: (id: string, genomic?: GenomicPanel | null) =>
+    request<TrialMatchResult>(`/patients/${id}/trial-match`, {
+      method: "POST",
+      body: JSON.stringify(genomic ? { genomic } : {}),
+    }),
+
+  // Field name MUST be "report" to match server.js's multer.single("report")
+  extractGenomic: (file: File) => {
+    const fd = new FormData();
+    fd.append("report", file);
+    return request<{ success: true; filename: string; genomic: GenomicPanel }>(`/genomic-extract`, {
+      method: "POST",
+      body: fd,
+    });
   },
 
   // Manual field correction — only accepted for a field the parser left blank

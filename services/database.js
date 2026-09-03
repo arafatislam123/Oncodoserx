@@ -210,6 +210,37 @@ function getRegimenByName(regimenName) {
   return rows.find((r) => haystack.includes(String(r.drug_name).toLowerCase())) || null;
 }
 
+// Patient clinical profile operations (Trial Match)
+// Whitelisted columns — unlike updatePatient(), column names are never taken
+// from caller input, so a crafted request body cannot reach the SQL text.
+const CLINICAL_COLUMNS = ["cancer_type", "stage", "ecog", "prior_lines", "sex", "age", "genomic_json"];
+
+function getPatientClinical(patientId) {
+  return queryOne("SELECT * FROM patient_clinical WHERE patient_id = ?", [patientId]) || null;
+}
+
+function upsertPatientClinical(patientId, updates = {}) {
+  const fields = CLINICAL_COLUMNS.filter((c) => updates[c] !== undefined);
+  const existing = getPatientClinical(patientId);
+
+  if (!existing) {
+    const cols = ["patient_id", ...fields];
+    const placeholders = cols.map(() => "?").join(", ");
+    query(
+      `INSERT INTO patient_clinical (${cols.join(", ")}) VALUES (${placeholders})`,
+      [patientId, ...fields.map((f) => updates[f])]
+    );
+  } else if (fields.length > 0) {
+    const setClause = fields.map((f) => `${f} = ?`).join(", ");
+    query(
+      `UPDATE patient_clinical SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE patient_id = ?`,
+      [...fields.map((f) => updates[f]), patientId]
+    );
+  }
+
+  return getPatientClinical(patientId);
+}
+
 // Dashboard stats
 function getDashboardStats() {
   const patientsResult = queryOne("SELECT COUNT(*) as total FROM patients");
@@ -300,6 +331,28 @@ function initDatabase() {
       FOREIGN KEY (patient_id) REFERENCES patients(id),
       FOREIGN KEY (regimen_id) REFERENCES chemotherapy_regimens(id)
     );
+
+    -- Clinician-supplied clinical data for Trial Match. Kept separate from the
+    -- patients table so existing patient CRUD is untouched. Holds only what the
+    -- report parser could NOT determine (or what a clinician corrected) --
+    -- the rest is re-derived from reports.extracted_text on read.
+    CREATE TABLE IF NOT EXISTS patient_clinical (
+      patient_id TEXT PRIMARY KEY,
+      cancer_type TEXT,
+      stage TEXT,
+      ecog INTEGER,
+      prior_lines INTEGER,
+      sex TEXT,
+      age INTEGER,
+      genomic_json TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      -- ON DELETE CASCADE so this table never blocks a patient delete that
+      -- would otherwise succeed. (The older tables lack it, which is why
+      -- deleting a patient that has reports already fails — pre-existing,
+      -- untouched here.)
+      FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+    );
   `);
 
   // Seed chemotherapy regimens
@@ -355,6 +408,8 @@ module.exports = {
   getRegimens: async(getRegimens),
   getRegimenById: async(getRegimenById),
   getRegimenByName: async(getRegimenByName),
+  getPatientClinical: async(getPatientClinical),
+  upsertPatientClinical: async(upsertPatientClinical),
   getDashboardStats: async(getDashboardStats),
   initDatabase: async(initDatabase),
 };

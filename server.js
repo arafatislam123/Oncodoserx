@@ -30,6 +30,9 @@ const db                       = require("./services/database");
 const { calculateBSA, validateBSAInputs } = require("./services/bsaCalculator");
 const { calculateDose, generateExplanation } = require("./services/doseEngine");
 const { generateComprehensiveExplanation } = require("./services/explainableAI");
+const { fetchTrials }          = require("./services/trialsClient");
+const { buildProfile, matchTrials } = require("./engine/trial_matcher");
+const { extractGenomicPanel }  = require("./engine/genomic_parser");
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -948,6 +951,186 @@ app.get("/api/patients/:id/dose-results", async (req, res) => {
   } catch (err) {
     console.error("Get dose results error:", err.message);
     res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TRIAL MATCH
+// ═══════════════════════════════════════════════════════════════════════════
+// The patients table holds demographics only, so a patient's clinical profile
+// is re-derived on read by re-running parseReport() over the latest report's
+// stored text, then layering clinician corrections from patient_clinical.
+// Existing patient CRUD is not involved.
+
+const TRIAL_DISCLAIMER =
+  "Decision support only — not a diagnostic or treatment recommendation. " +
+  "Final decision rests with the treating clinician.";
+
+function ageFromDob(dob) {
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return null;
+  const years = Math.floor((Date.now() - d.getTime()) / (365.25 * 24 * 3600 * 1000));
+  return years > 0 && years < 130 ? years : null;
+}
+
+/**
+ * Rebuild a patient's clinical profile from every available source.
+ * @param genomicOverride an NGS panel just extracted but not yet saved —
+ *        lets the clinician review markers and match before committing them.
+ */
+async function derivePatientProfile(patientId, genomicOverride = null) {
+  const patient = await db.getPatient(patientId);
+  if (!patient) return null;
+
+  const reports = await db.getReportsByPatient(patientId);
+  const latest = reports.find((r) => r.extracted_text && r.extracted_text.trim().length > 30) || null;
+  const parsed = latest ? parseReport(latest.extracted_text) : {};
+
+  // Demographics from the patient record fill gaps the report text didn't state.
+  if (parsed.age == null) parsed.age = ageFromDob(patient.date_of_birth);
+  if (!parsed.gender) parsed.gender = patient.gender;
+
+  const clinical = await db.getPatientClinical(patientId);
+  const overrides = clinical
+    ? {
+        cancerType: clinical.cancer_type,
+        stage:      clinical.stage,
+        ecog:       clinical.ecog,
+        priorLines: clinical.prior_lines,
+        sex:        clinical.sex,
+        age:        clinical.age,
+      }
+    : {};
+
+  let genomic = genomicOverride;
+  if (!genomic && clinical?.genomic_json) {
+    try { genomic = JSON.parse(clinical.genomic_json); } catch { genomic = null; }
+  }
+
+  return {
+    patient,
+    genomic: genomic || null,
+    profile: buildProfile({ parsed, overrides, genomic }),
+    latestReport: latest ? { id: latest.id, filename: latest.filename, created_at: latest.created_at } : null,
+  };
+}
+
+// ── GET /api/patients/:id/clinical ────────────────────────────────────────────
+app.get("/api/patients/:id/clinical", async (req, res) => {
+  try {
+    const derived = await derivePatientProfile(req.params.id);
+    if (!derived) return res.status(404).json({ error: "Patient not found" });
+    res.json({
+      success: true,
+      profile: derived.profile,
+      genomic: derived.genomic,
+      latestReport: derived.latestReport,
+      disclaimer: TRIAL_DISCLAIMER,
+    });
+  } catch (err) {
+    console.error("Get clinical profile error:", err.message);
+    res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
+
+// ── PUT /api/patients/:id/clinical ────────────────────────────────────────────
+// Saves clinician corrections into patient_clinical only — the patients table
+// is never written here.
+app.put("/api/patients/:id/clinical", async (req, res) => {
+  try {
+    const patient = await db.getPatient(req.params.id);
+    if (!patient) return res.status(404).json({ error: "Patient not found" });
+
+    const b = req.body || {};
+    const blank = (v) => v === null || v === undefined || v === "";
+    const updates = {};
+
+    if (b.cancerType !== undefined) updates.cancer_type = blank(b.cancerType) ? null : String(b.cancerType).trim();
+    if (b.stage      !== undefined) updates.stage       = blank(b.stage) ? null : String(b.stage).trim();
+    if (b.sex        !== undefined) updates.sex         = blank(b.sex) ? null : String(b.sex).toLowerCase();
+    if (b.ecog       !== undefined) updates.ecog        = blank(b.ecog) ? null : Number(b.ecog);
+    if (b.priorLines !== undefined) updates.prior_lines = blank(b.priorLines) ? null : Number(b.priorLines);
+    if (b.age        !== undefined) updates.age         = blank(b.age) ? null : Number(b.age);
+    if (b.genomic    !== undefined) updates.genomic_json = blank(b.genomic) ? null : JSON.stringify(b.genomic);
+
+    if (updates.ecog != null && (!Number.isInteger(updates.ecog) || updates.ecog < 0 || updates.ecog > 4)) {
+      return res.status(400).json({ error: "ECOG must be a whole number between 0 and 4." });
+    }
+    if (updates.prior_lines != null && (!Number.isInteger(updates.prior_lines) || updates.prior_lines < 0 || updates.prior_lines > 20)) {
+      return res.status(400).json({ error: "Prior treatment lines must be a whole number between 0 and 20." });
+    }
+    if (updates.age != null && (!Number.isFinite(updates.age) || updates.age <= 0 || updates.age > 120)) {
+      return res.status(400).json({ error: "Age must be between 1 and 120." });
+    }
+    if (updates.sex && !["male", "female", "other"].includes(updates.sex)) {
+      return res.status(400).json({ error: "Sex must be male, female or other." });
+    }
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ error: "No clinical fields supplied." });
+    }
+
+    await db.upsertPatientClinical(req.params.id, updates);
+    const derived = await derivePatientProfile(req.params.id);
+    res.json({ success: true, profile: derived.profile, genomic: derived.genomic });
+  } catch (err) {
+    console.error("Update clinical profile error:", err.message);
+    res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
+
+// ── POST /api/patients/:id/trial-match ────────────────────────────────────────
+app.post("/api/patients/:id/trial-match", async (req, res) => {
+  try {
+    const derived = await derivePatientProfile(req.params.id, req.body?.genomic || null);
+    if (!derived) return res.status(404).json({ error: "Patient not found" });
+
+    const { profile } = derived;
+    if (!profile.cancerType) {
+      return res.status(400).json({
+        error: "A cancer type is required to search for trials. Upload a report or enter one manually.",
+      });
+    }
+
+    const { trials, dataSource, error } = await fetchTrials({ condition: profile.cancerType });
+    const matches = matchTrials(trials, profile, 20);
+
+    res.json({
+      success: true,
+      profile,
+      trials: matches,
+      dataSource,                 // "live" | "cache" | "fallback"
+      dataSourceError: error,
+      totalConsidered: trials.length,
+      disclaimer: TRIAL_DISCLAIMER,
+    });
+  } catch (err) {
+    console.error("Trial-match error:", err.message);
+    res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
+
+// ── POST /api/genomic-extract ─────────────────────────────────────────────────
+// Optional NGS report upload. Returns the extracted panel for clinician review;
+// it is only persisted if the client subsequently PUTs it to /clinical.
+app.post("/api/genomic-extract", upload.single("report"), async (req, res) => {
+  const filePath = req.file?.path;
+  try {
+    if (!req.file) return res.status(400).json({ error: "No file uploaded." });
+
+    const rawText = await extractText(filePath, req.file.mimetype, req.file.originalname);
+    if (!rawText || rawText.trim().length < 30) {
+      return res.status(400).json({
+        error: "Could not read the genomic report. Ensure the PDF is text-based or the image is legible.",
+      });
+    }
+
+    const genomic = extractGenomicPanel(rawText);
+    res.json({ success: true, filename: req.file.originalname, genomic });
+  } catch (err) {
+    console.error("Genomic-extract error:", err.message);
+    res.status(500).json({ error: err.message || "Internal server error." });
+  } finally {
+    if (filePath && fs.existsSync(filePath)) fs.unlinkSync(filePath);
   }
 });
 
