@@ -33,6 +33,11 @@ const { generateComprehensiveExplanation } = require("./services/explainableAI")
 const { fetchTrials }          = require("./services/trialsClient");
 const { buildProfile, matchTrials } = require("./engine/trial_matcher");
 const { extractGenomicPanel }  = require("./engine/genomic_parser");
+const { validateDecision, weightFor } = require("./engine/nccn_validator");
+const { persistAnalysis }      = require("./services/analysisPersistence");
+const datasetWriter            = require("./services/datasetWriter");
+const learningStore            = require("./services/learningStore");
+const retrainer                = require("./services/retrainer");
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -240,6 +245,38 @@ function buildFinalResult(parsed, ruleResult, mlResult, filename, reportClass, d
   };
 }
 
+// ── Automatic patient-record capture ──────────────────────────────────────────
+// Every analysis becomes patient data. This is what makes the learning loop
+// possible: the clinician's decision is attached to a stored case later, and a
+// case that was never stored cannot be learned from. Set AUTO_SAVE_ANALYSIS
+// =false to analyse without writing to the patient record.
+const AUTO_SAVE_ANALYSIS = process.env.AUTO_SAVE_ANALYSIS !== "false";
+
+/**
+ * Saves the analysis and hangs the resulting ids off the result object as
+ * `result.saved`, which the UI needs in order to submit a treatment decision
+ * against this case. A save failure is reported in that object rather than
+ * thrown — losing the analysis over a database error would be worse.
+ */
+async function autoSave(result, { rawText, filename, filePath, patientId, reportType }) {
+  if (!AUTO_SAVE_ANALYSIS) {
+    result.saved = { saved: false, skipped: true, reason: "auto-save disabled" };
+    return result;
+  }
+  const outcome = await persistAnalysis({
+    analysisResult: result, rawText, filename, filePath, patientId, reportType,
+  });
+  result.saved = outcome.saved
+    ? {
+        saved: true,
+        patientId: outcome.patient.id,
+        reportId: outcome.report.id,
+        patientName: `${outcome.patient.first_name} ${outcome.patient.last_name}`.trim(),
+      }
+    : { saved: false, error: outcome.error };
+  return result;
+}
+
 // ── Manual field correction ────────────────────────────────────────────────────
 // Lets a doctor fill in a field the parser could not extract from the report
 // text (e.g. stage missing from a GBM report, or height/weight needed for dose
@@ -343,7 +380,14 @@ app.post("/api/analyze", upload.single("report"), async (req, res) => {
       });
     }
     const selectedCancerType = req.body?.cancerType || null;
-    res.json(runAnalysis(rawText, req.file.originalname, selectedCancerType));
+    const result = runAnalysis(rawText, req.file.originalname, selectedCancerType);
+    await autoSave(result, {
+      rawText,
+      filename: req.file.originalname,
+      filePath,
+      patientId: req.body?.patient_id || null,
+    });
+    res.json(result);
   } catch (err) {
     console.error("Analyze error:", err.message);
     res.status(500).json({ error: err.message || "Internal server error." });
@@ -424,8 +468,15 @@ app.post("/api/analyze-multi", (req, res) => {
       }
 
       const selectedCancerType = req.body?.cancerType || null;
-      const result = runAnalysis(combinedText, `${slotsMeta.length} report(s) combined`, selectedCancerType);
+      const filename = `${slotsMeta.length} report(s) combined`;
+      const result = runAnalysis(combinedText, filename, selectedCancerType);
       result.uploadedSlots = slotsMeta;
+      await autoSave(result, {
+        rawText: combinedText,
+        filename,
+        patientId: req.body?.patient_id || null,
+        reportType: "multi-report",
+      });
       res.json(result);
 
     } catch (err) {
@@ -447,7 +498,14 @@ app.post("/api/analyze-text", async (req, res) => {
     return res.status(400).json({ error: "Please provide at least 30 characters of report text." });
   }
   try {
-    res.json(runAnalysis(text, "Pasted Report", cancerType || null));
+    const result = runAnalysis(text, "Pasted Report", cancerType || null);
+    await autoSave(result, {
+      rawText: text,
+      filename: "Pasted Report",
+      patientId: req.body?.patient_id || null,
+      reportType: "pasted-text",
+    });
+    res.json(result);
   } catch (err) {
     console.error("Analyze-text error:", err.message);
     res.status(500).json({ error: err.message || "Internal server error." });
@@ -1277,11 +1335,403 @@ app.post("/api/upload-and-analyze", upload.single("report"), async (req, res) =>
   }
 });
 
+// ══════════════════════════════════════════════════════════════════════════════
+// CONTINUOUS LEARNING — clinician decision capture → dataset → model
+// ══════════════════════════════════════════════════════════════════════════════
+//
+// The loop:
+//   1. A report is analysed and auto-saved as patient data (autoSave above).
+//   2. The clinician confirms or overrides the recommended regimen and cycles.
+//   3. That decision is cross-checked against the NCCN rule set, recorded, and
+//      appended to data/cancer_patients.csv as a real, weighted training row.
+//   4. Once RETRAIN_THRESHOLD new cases have accumulated, the model retrains in
+//      the background and — if accuracy holds — is promoted and hot-reloaded.
+//
+// Step 2 is the part that cannot be automated away. Writing the model's own
+// prediction back into its training data teaches it nothing and amplifies its
+// existing bias; only a human-confirmed outcome is a real label.
+
+/**
+ * The core of the learning loop, shared by the single-decision route and the
+ * batch confirm route on the patient page. Records the decision, cross-checks
+ * it against NCCN, and appends it to the training corpus.
+ *
+ * Does NOT trigger retraining — the caller decides when, so a batch of ten
+ * confirmations starts one run rather than ten.
+ */
+async function recordTreatmentDecision({
+  patientId, reportId, parsed, decision,
+  primaryPrediction, ruleRecommendations,
+  decidedBy, clinicalNotes, outcome,
+  contributeToDataset = true,
+}) {
+  // 1. Cross-check against the NCCN rule set.
+  const nccn = validateDecision(parsed, decision, ruleRecommendations || null);
+
+  // 2. Did the clinician change what the model proposed?
+  const modelRegimen = primaryPrediction?.regimen ?? null;
+  const modelCycles  = primaryPrediction?.predictedCycles ?? null;
+  const overrodeModel = Boolean(
+    modelRegimen &&
+    (String(modelRegimen).trim() !== String(decision.regimen || "").trim() ||
+     Number(modelCycles) !== Number(decision.cycles))
+  );
+
+  // 3. Record the decision — this happens whether or not it can be turned
+  //    into a training row, because it is also the clinical audit trail.
+  const record = await learningStore.createDecision({
+    patient_id: patientId || null,
+    report_id: reportId || null,
+    cancer_type: decision.cancerType || parsed.cancerType || null,
+    stage: decision.stage || parsed.stage || null,
+    decided_regimen: String(decision.regimen || "").trim(),
+    decided_cycles: Number(decision.cycles),
+    treatment_intent: decision.intent || null,
+    prior_treatment: decision.priorTreatment || null,
+    model_regimen: modelRegimen,
+    model_cycles: modelCycles,
+    overrode_model: overrodeModel,
+    nccn_concordance: nccn.concordance,
+    nccn_reference: nccn.reference,
+    nccn_message: nccn.message,
+    decided_by: decidedBy || null,
+    clinical_notes: clinicalNotes || null,
+    outcome: outcome || null,
+    parsed_snapshot: parsed,
+  });
+
+  // 4. Build the training row.
+  const built = datasetWriter.buildDatasetRow({ parsed, decision });
+  if (!built.row) {
+    return {
+      decision: record,
+      nccn,
+      contribution: {
+        contributed: false,
+        reason: "incomplete",
+        errors: built.errors,
+        message:
+          "The decision was recorded on the patient chart, but it is missing " +
+          "fields the model trains on, so it was not added to the dataset.",
+      },
+    };
+  }
+
+  if (!contributeToDataset) {
+    return {
+      decision: record,
+      nccn,
+      contribution: {
+        contributed: false,
+        reason: "declined",
+        message: "The decision was recorded but was not added to the training dataset.",
+      },
+    };
+  }
+
+  // 5. Reject an exact duplicate of a case already in the corpus — a doctor
+  //    re-submitting the same analysis would otherwise multiply its weight.
+  const fingerprint = datasetWriter.rowFingerprint({ ...built.row, patient_id: "" });
+  const existing = await learningStore.findContributionByFingerprint(fingerprint);
+  if (existing) {
+    return {
+      decision: record,
+      nccn,
+      contribution: {
+        contributed: false,
+        reason: "duplicate",
+        datasetPatientId: existing.dataset_patient_id,
+        message:
+          `This exact case is already in the dataset as ${existing.dataset_patient_id}. ` +
+          "The decision was recorded again on the chart but not counted twice in training.",
+      },
+    };
+  }
+
+  // 6. Append to the dataset, weighted by NCCN concordance.
+  const sampleWeight = datasetWriter.DEFAULT_SAMPLE_WEIGHT * weightFor(nccn.concordance);
+  const appended = datasetWriter.appendContribution(built.row, {
+    reportId, patientId,
+    nccnConcordance: nccn.concordance,
+    decidedBy,
+    overrodeModel,
+    modelRegimen,
+    modelCycles,
+    sampleWeight,
+  });
+  await learningStore.createContribution({
+    decisionId: record.id,
+    datasetPatientId: appended.patientId,
+    fingerprint,
+    sampleWeight,
+  });
+
+  return {
+    decision: record,
+    nccn,
+    contribution: {
+      contributed: true,
+      datasetPatientId: appended.patientId,
+      sampleWeight: Number(sampleWeight.toFixed(2)),
+      datasetRows: datasetWriter.datasetRowCount(),
+      clinicalRows: datasetWriter.contributionCount(),
+      message:
+        `Added to the training dataset as ${appended.patientId} ` +
+        `(weight ${sampleWeight.toFixed(1)}x, NCCN: ${nccn.concordance.replace(/_/g, " ")}).`,
+    },
+  };
+}
+
+// ── POST /api/treatment-decision ──────────────────────────────────────────────
+app.post("/api/treatment-decision", async (req, res) => {
+  try {
+    const { parsed, decision } = req.body || {};
+    if (!parsed || typeof parsed !== "object") {
+      return res.status(400).json({ error: "Missing parsed report data." });
+    }
+    if (!decision || typeof decision !== "object") {
+      return res.status(400).json({ error: "Missing treatment decision." });
+    }
+
+    const result = await recordTreatmentDecision(req.body);
+    const retrain = await retrainer.maybeRetrain();
+    const pending = await learningStore.pendingContributionCount();
+
+    res.json({
+      success: true,
+      ...result,
+      retrain: { ...retrain, pending, threshold: retrainer.RETRAIN_THRESHOLD },
+    });
+  } catch (err) {
+    console.error("Treatment-decision error:", err.message);
+    res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
+
+// ── GET /api/patients/:id/pending-decisions ───────────────────────────────────
+// Analyses saved for this patient that no clinician has signed off on yet.
+//
+// The recommendation is re-derived from the report's stored text rather than
+// cached at analysis time, so a pending item always reflects the CURRENT model
+// and rule set — confirming a month-old analysis should not commit a month-old
+// recommendation.
+const PENDING_LIMIT = 20;
+
+app.get("/api/patients/:id/pending-decisions", async (req, res) => {
+  try {
+    const patient = await db.getPatient(req.params.id);
+    if (!patient) return res.status(404).json({ error: "Patient not found" });
+
+    const reports = await db.getReportsByPatient(req.params.id);
+    const decidedIds = new Set(
+      (await learningStore.getDecisionsByPatient(req.params.id))
+        .map((d) => d.report_id)
+        .filter(Boolean)
+    );
+
+    const pending = [];
+    for (const report of reports) {
+      if (pending.length >= PENDING_LIMIT) break;
+      if (decidedIds.has(report.id)) continue;
+      if (!report.extracted_text || report.extracted_text.trim().length < 30) continue;
+
+      const analysis = runAnalysis(report.extracted_text, report.filename);
+      if (analysis.predictionBlocked) continue;
+
+      const top = analysis.primaryPrediction
+        ? {
+            regimen: analysis.primaryPrediction.regimen,
+            cycles: analysis.primaryPrediction.predictedCycles,
+            intent: analysis.ruleRecommendations?.[0]?.intent || "Curative",
+            source: "ML",
+          }
+        : analysis.ruleRecommendations?.[0]
+        ? {
+            regimen: analysis.ruleRecommendations[0].regimen,
+            cycles: analysis.ruleRecommendations[0].cycles,
+            intent: analysis.ruleRecommendations[0].intent || "Curative",
+            source: "NCCN",
+          }
+        : null;
+      if (!top) continue;
+
+      // Tell the UI up front whether confirming this one would actually reach
+      // the dataset, so a clinician is not promised a contribution that the
+      // row validator will then reject.
+      const built = datasetWriter.buildDatasetRow({
+        parsed: analysis.parsed,
+        decision: { ...top, cycles: Number(top.cycles) },
+      });
+
+      pending.push({
+        reportId: report.id,
+        filename: report.filename,
+        createdAt: report.created_at,
+        cancerType: analysis.parsed?.cancerType || null,
+        stage: analysis.parsed?.stage || null,
+        suggestion: top,
+        canContribute: Boolean(built.row),
+        blockers: built.errors,
+      });
+    }
+
+    res.json({ success: true, pending, limit: PENDING_LIMIT });
+  } catch (err) {
+    console.error("Pending-decisions error:", err.message);
+    res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
+
+// ── POST /api/patients/:id/confirm-decisions ──────────────────────────────────
+// Batch sign-off from the patient page. Each item may override the suggested
+// regimen and cycles; anything omitted falls back to the current recommendation
+// re-derived from the report, so the clinician confirms what they were shown.
+app.post("/api/patients/:id/confirm-decisions", async (req, res) => {
+  try {
+    const patient = await db.getPatient(req.params.id);
+    if (!patient) return res.status(404).json({ error: "Patient not found" });
+
+    const { items, decidedBy, contributeToDataset = true } = req.body || {};
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: "No reports selected." });
+    }
+    if (items.length > PENDING_LIMIT) {
+      return res.status(400).json({ error: `At most ${PENDING_LIMIT} reports can be confirmed at once.` });
+    }
+
+    const results = [];
+    for (const item of items) {
+      const report = await db.getReport(item?.reportId);
+      if (!report || report.patient_id !== req.params.id) {
+        results.push({ reportId: item?.reportId, ok: false, error: "Report not found for this patient." });
+        continue;
+      }
+      if (!report.extracted_text) {
+        results.push({ reportId: report.id, ok: false, error: "Report has no stored text to re-analyse." });
+        continue;
+      }
+
+      const analysis = runAnalysis(report.extracted_text, report.filename);
+      const fallback = analysis.primaryPrediction || analysis.ruleRecommendations?.[0];
+      const regimen = item.regimen || fallback?.regimen;
+      const cycles = item.cycles ?? (
+        analysis.primaryPrediction ? analysis.primaryPrediction.predictedCycles : fallback?.cycles
+      );
+
+      if (!regimen || cycles === undefined || cycles === null) {
+        results.push({ reportId: report.id, ok: false, error: "No recommendation available to confirm." });
+        continue;
+      }
+
+      const outcome = await recordTreatmentDecision({
+        patientId: req.params.id,
+        reportId: report.id,
+        parsed: analysis.parsed,
+        primaryPrediction: analysis.primaryPrediction,
+        ruleRecommendations: analysis.ruleRecommendations,
+        decision: {
+          regimen,
+          cycles: Number(cycles),
+          intent: item.intent || analysis.ruleRecommendations?.[0]?.intent || "Curative",
+          priorTreatment: item.priorTreatment,
+          gender: item.gender ?? patient.gender,
+          age: item.age ?? analysis.parsed?.age,
+          ecog: item.ecog ?? analysis.parsed?.performanceStatus,
+          charlson: item.charlson,
+        },
+        decidedBy,
+        clinicalNotes: item.clinicalNotes,
+        contributeToDataset,
+      });
+
+      results.push({
+        reportId: report.id,
+        filename: report.filename,
+        ok: true,
+        nccn: outcome.nccn,
+        contribution: outcome.contribution,
+      });
+    }
+
+    // One run for the whole batch, not one per item.
+    const retrain = await retrainer.maybeRetrain();
+    const pending = await learningStore.pendingContributionCount();
+
+    res.json({
+      success: true,
+      results,
+      confirmed: results.filter((r) => r.ok).length,
+      contributed: results.filter((r) => r.ok && r.contribution?.contributed).length,
+      retrain: { ...retrain, pending, threshold: retrainer.RETRAIN_THRESHOLD },
+    });
+  } catch (err) {
+    console.error("Confirm-decisions error:", err.message);
+    res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
+
+// ── GET /api/model/status ─────────────────────────────────────────────────────
+app.get("/api/model/status", async (_req, res) => {
+  try {
+    res.json({ success: true, ...(await retrainer.status()) });
+  } catch (err) {
+    console.error("Model-status error:", err.message);
+    res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
+
+// ── POST /api/model/retrain ───────────────────────────────────────────────────
+// Kicks off a run immediately, ignoring the pending-case threshold. Responds as
+// soon as the run starts — training takes minutes; poll /api/model/status.
+app.post("/api/model/retrain", async (_req, res) => {
+  try {
+    const running = await learningStore.getRunningVersion();
+    if (running) {
+      return res.status(409).json({
+        error: `Model v${running.version} is already training. Poll /api/model/status for progress.`,
+      });
+    }
+    retrainer.retrain("manual").catch((err) =>
+      console.error("  [retrain] manual run failed:", err.message));
+    res.json({
+      success: true,
+      started: true,
+      message: "Retraining started in the background. Poll /api/model/status for progress.",
+    });
+  } catch (err) {
+    console.error("Retrain error:", err.message);
+    res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
+
+// ── GET /api/learning/decisions ───────────────────────────────────────────────
+app.get("/api/learning/decisions", async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+    res.json({ success: true, decisions: await learningStore.getRecentDecisions(limit) });
+  } catch (err) {
+    res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
+
+// ── GET /api/patients/:id/decisions ───────────────────────────────────────────
+app.get("/api/patients/:id/decisions", async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      decisions: await learningStore.getDecisionsByPatient(req.params.id),
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
+
 // ── Start ─────────────────────────────────────────────────────────────────────
 app.listen(PORT, async () => {
   try {
     // Initialize database
     await db.initDatabase();
+    await learningStore.initLearningTables();
     console.log("Database initialized");
   } catch (err) {
     console.error("Database initialization error:", err.message);

@@ -32,6 +32,7 @@ import {
   type TrialMatchResult,
 } from "@/lib/api";
 import { Badge, CardHeading } from "@/components/AnalysisView";
+import { PendingDecisionsCard } from "@/components/PendingDecisionsCard";
 import { useLanguage } from "@/lib/i18n/context";
 
 type Tab = "overview" | "trials";
@@ -101,6 +102,10 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             <Field label={t("patientDetail.weight")} value={patient.weight_kg ? `${patient.weight_kg} kg` : "-"} />
             <Field label={t("patientDetail.bmi")} value={bmi} />
           </div>
+
+          {/* Analyses on this chart that no clinician has signed off on yet.
+              Renders nothing when there are none. */}
+          <PendingDecisionsCard patientId={id} />
 
           <div className="card overflow-x-auto">
             <span className="section-label">{t("patientDetail.reports")} ({reports.length})</span>

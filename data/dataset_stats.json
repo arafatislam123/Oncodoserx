@@ -1,18 +1,20 @@
 {
-  "total_patients": 156000,
-  "accuracy": 0.581,
-  "accuracy_bucket": 0.7899,
-  "cancer_types": 25,
-  "unique_regimens": 55,
+  "total_patients": 150002,
+  "clinical_patients": 2,
+  "accuracy": 0.5823,
+  "accuracy_bucket": 0.7962,
+  "clinical_accuracy_bucket": null,
+  "cancer_types": 23,
+  "unique_regimens": 54,
   "stage_distribution": {
-    "II": 57495,
+    "II": 57496,
     "IV": 35988,
-    "III": 34212,
+    "III": 34213,
     "I": 22305
   },
   "top_cancers": {
     "Breast Cancer": 24485,
-    "Colorectal Cancer": 18785,
+    "Colorectal Cancer": 18787,
     "Lung Cancer (NSCLC)": 18046,
     "Prostate Cancer": 14199,
     "Melanoma": 7994,
@@ -23,8 +25,9 @@
     "Endometrial Cancer": 5722,
     "Leukemia (AML)": 4748,
     "Thyroid Cancer": 4138,
-    "Brain Cancer": 3892,
-    "Brain Tumor": 2847
+    "Liver Cancer (HCC)": 3828,
+    "Ovarian Cancer": 3712,
+    "Gastric Cancer": 3530
   },
   "cycle_distribution": {
     "0": 44572,
@@ -34,11 +37,11 @@
     "5": 15091,
     "6": 13587,
     "7": 14254,
-    "8": 14735,
+    "8": 14736,
     "9": 7489,
     "10": 552,
     "11": 3345,
-    "12": 6071,
+    "12": 6072,
     "13": 3074,
     "34": 17,
     "35": 67
@@ -75,16 +78,6 @@
     "prior_treatment",
     "treatment_intent"
   ],
-  "crc_stats": {
-    "total": 18785,
-    "kras_mutated": 8511,
-    "mmr_msi_h": 2858,
-    "mss": 15023,
-    "stage_dist": {
-      "II": 7112,
-      "IV": 5411,
-      "III": 4444,
-      "I": 1818
-    }
-  }
+  "trained_at": "2026-09-04T03:55:27",
+  "source": "SEER Program / NCCN Guidelines / ACS Cancer Statistics 2023 + clinician-confirmed cases"
 }

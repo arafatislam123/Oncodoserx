@@ -41,6 +41,12 @@ function query(sql, params = []) {
   }
 }
 
+// Multi-statement DDL — `query()` goes through prepare(), which only accepts a
+// single statement, so schema blocks (e.g. learningStore's tables) come here.
+function exec(sql) {
+  getDb().exec(sql);
+}
+
 function queryOne(sql, params = []) {
   const db = getDb();
   try {
@@ -392,6 +398,7 @@ function initDatabase() {
 module.exports = {
   query: async(query),
   queryOne: async(queryOne),
+  exec: async(exec),
   createPatient: async(createPatient),
   getPatient: async(getPatient),
   getAllPatients: async(getAllPatients),

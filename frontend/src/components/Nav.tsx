@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, FolderOpen, LayoutDashboard, Ruler, Upload, Users } from "lucide-react";
+import { Activity, BrainCircuit, FolderOpen, LayoutDashboard, Ruler, Upload, Users } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: "/bsa", key: "nav.bsa" as const, icon: Ruler, exact: true },
   { href: "/upload", key: "nav.upload" as const, icon: Upload, exact: true },
   { href: "/multi-upload", key: "nav.multiUpload" as const, icon: FolderOpen, exact: true },
+  { href: "/model", key: "nav.modelLearning" as const, icon: BrainCircuit, exact: true },
 ];
 
 export function Nav() {

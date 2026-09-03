@@ -33,18 +33,18 @@
     "gender": {
       "classes": [
         "Female",
-        "Male"
+        "Male",
+        "N/A"
       ],
       "mapping": {
         "Female": 0,
-        "Male": 1
+        "Male": 1,
+        "N/A": 2
       }
     },
     "cancer_type": {
       "classes": [
         "Bladder Cancer",
-        "Brain Cancer",
-        "Brain Tumor",
         "Breast Cancer",
         "Cervical Cancer",
         "Colorectal Cancer",
@@ -70,30 +70,28 @@
       ],
       "mapping": {
         "Bladder Cancer": 0,
-        "Brain Cancer": 1,
-        "Brain Tumor": 2,
-        "Breast Cancer": 3,
-        "Cervical Cancer": 4,
-        "Colorectal Cancer": 5,
-        "Endometrial Cancer": 6,
-        "Esophageal Cancer": 7,
-        "Gastric Cancer": 8,
-        "Head & Neck Cancer": 9,
-        "Hodgkin Lymphoma": 10,
-        "Kidney Cancer (RCC)": 11,
-        "Leukemia (ALL)": 12,
-        "Leukemia (AML)": 13,
-        "Liver Cancer (HCC)": 14,
-        "Lung Cancer (NSCLC)": 15,
-        "Lung Cancer (SCLC)": 16,
-        "Melanoma": 17,
-        "Multiple Myeloma": 18,
-        "Non-Hodgkin Lymphoma": 19,
-        "Ovarian Cancer": 20,
-        "Pancreatic Cancer": 21,
-        "Prostate Cancer": 22,
-        "Testicular Cancer": 23,
-        "Thyroid Cancer": 24
+        "Breast Cancer": 1,
+        "Cervical Cancer": 2,
+        "Colorectal Cancer": 3,
+        "Endometrial Cancer": 4,
+        "Esophageal Cancer": 5,
+        "Gastric Cancer": 6,
+        "Head & Neck Cancer": 7,
+        "Hodgkin Lymphoma": 8,
+        "Kidney Cancer (RCC)": 9,
+        "Leukemia (ALL)": 10,
+        "Leukemia (AML)": 11,
+        "Liver Cancer (HCC)": 12,
+        "Lung Cancer (NSCLC)": 13,
+        "Lung Cancer (SCLC)": 14,
+        "Melanoma": 15,
+        "Multiple Myeloma": 16,
+        "Non-Hodgkin Lymphoma": 17,
+        "Ovarian Cancer": 18,
+        "Pancreatic Cancer": 19,
+        "Prostate Cancer": 20,
+        "Testicular Cancer": 21,
+        "Thyroid Cancer": 22
       }
     },
     "stage": {
@@ -153,21 +151,25 @@
     "m_stage": {
       "classes": [
         "M0",
-        "M1"
+        "M1",
+        "N/A"
       ],
       "mapping": {
         "M0": 0,
-        "M1": 1
+        "M1": 1,
+        "N/A": 2
       }
     },
     "her2_status": {
       "classes": [
+        "N/A",
         "Negative",
         "Positive"
       ],
       "mapping": {
-        "Negative": 0,
-        "Positive": 1
+        "N/A": 0,
+        "Negative": 1,
+        "Positive": 2
       }
     },
     "er_status": {

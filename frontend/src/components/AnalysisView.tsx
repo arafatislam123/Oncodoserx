@@ -39,28 +39,8 @@ import type {
 import { generateTreatmentPlan, type TreatmentPlan } from "@/lib/treatmentPlan";
 import { SlotTypeIcon, REPORT_TYPE_ICONS, SLOT_TYPE_ICONS } from "@/lib/icons";
 import { useLanguage } from "@/lib/i18n/context";
-
-const badgeClass: Record<string, string> = {
-  green: "bg-emerald-50 text-emerald-700",
-  yellow: "bg-amber-50 text-amber-700",
-  red: "bg-red-50 text-red-700",
-  blue: "bg-brand-50 text-brand-700",
-  grey: "bg-slate-100 text-slate-600",
-  purple: "bg-purple-50 text-purple-700",
-};
-
-function Badge({ color, children }: { color: keyof typeof badgeClass; children: React.ReactNode }) {
-  return <span className={`badge ${badgeClass[color]}`}>{children}</span>;
-}
-
-function CardHeading({ icon: Icon, children }: { icon: LucideIcon; children: React.ReactNode }) {
-  return (
-    <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-900">
-      <Icon size={16} strokeWidth={2} className="text-slate-400" />
-      {children}
-    </h2>
-  );
-}
+import { TreatmentDecisionCard } from "@/components/TreatmentDecisionCard";
+import { Badge, badgeClass, CardHeading } from "@/components/ui";
 
 export function AnalysisView({
   result,
@@ -109,6 +89,14 @@ export function AnalysisView({
       )}
 
       <RulesCard rules={ruleRecommendations} />
+
+      {/* The learning loop. Only offered when there is something to decide on --
+          a blocked prediction means the report was not sufficient, so a decision
+          recorded against it would be a poor training label. */}
+      {!result.predictionBlocked && (primaryPrediction || ruleRecommendations.length > 0) && (
+        <TreatmentDecisionCard result={result} />
+      )}
+
       {primaryPrediction?.featureImportance && <FeatureImportanceCard fi={primaryPrediction.featureImportance} />}
 
       <div className="card">

@@ -17,15 +17,17 @@
 const path = require("path");
 const fs   = require("fs");
 
-const DATA_DIR = path.join(__dirname, "..", "data");
+// Honours DATA_DIR so the retrainer, the dataset writer and this loader all
+// read the same directory when one is overridden (tests, alternate corpus).
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "..", "data");
 
 // ── Load model artefacts ──────────────────────────────────────────────────────
 let MODEL_RULES    = null;
 let DATASET_STATS  = null;
 let FEAT_IMPORT    = null;
 
-function loadArtefacts() {
-  if (MODEL_RULES) return; // already loaded
+function loadArtefacts(force = false) {
+  if (MODEL_RULES && !force) return; // already loaded
   try {
     MODEL_RULES   = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "model_rules.json"),      "utf8"));
     DATASET_STATS = JSON.parse(fs.readFileSync(path.join(DATA_DIR, "dataset_stats.json"),    "utf8"));
@@ -586,4 +588,17 @@ function getDatasetInfo() {
   };
 }
 
-module.exports = { mlPredict, getDatasetInfo, normaliseCancerType, loadArtefacts, getModelTypes };
+// Re-reads the artefacts from disk. Called after a retraining run promotes a
+// new model so the very next prediction uses it — without this the server would
+// keep serving the old model until it was restarted.
+function reloadArtefacts() {
+  MODEL_RULES = null;
+  loadArtefacts(true);
+  return {
+    trainingPatients: DATASET_STATS.total_patients,
+    accuracyBucket:   DATASET_STATS.accuracy_bucket,
+    cancerTypes:      Object.keys(MODEL_RULES || {}).length,
+  };
+}
+
+module.exports = { mlPredict, getDatasetInfo, normaliseCancerType, loadArtefacts, reloadArtefacts, getModelTypes };

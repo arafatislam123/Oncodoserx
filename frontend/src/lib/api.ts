@@ -205,9 +205,21 @@ export interface UploadedSlot {
   chars: number;
 }
 
+/** Where the backend auto-saved this analysis, so a decision can be attached to it. */
+export interface SavedAnalysis {
+  saved: boolean;
+  skipped?: boolean;
+  reason?: string;
+  error?: string;
+  patientId?: string;
+  reportId?: string;
+  patientName?: string;
+}
+
 export interface AnalysisResult {
   success: boolean;
   filename: string;
+  saved?: SavedAnalysis;
   uploadedSlots?: UploadedSlot[];
   reportClassification: {
     primaryType?: string;
@@ -529,5 +541,205 @@ export interface BreastSecondaryResult {
   reportClassification: AnalysisResult["reportClassification"];
   secondaryAnalysis: SecondaryAnalysis;
 }
+
+// ── Continuous learning ───────────────────────────────────────────────────────
+// A clinician confirming (or overriding) a recommendation is what turns an
+// analysis into training data. See server.js /api/treatment-decision.
+
+export type NccnConcordance =
+  | "guideline_match"
+  | "regimen_match"
+  | "variant"
+  | "off_guideline"
+  | "unverifiable";
+
+export interface NccnValidation {
+  concordance: NccnConcordance;
+  matchedRule: { ruleId: string | null; regimen: string; cycles: number | null; intent: string | null } | null;
+  reference: string | null;
+  similarity: number;
+  message: string;
+  warnings: string[];
+}
+
+export interface TreatmentDecisionInput {
+  regimen: string;
+  cycles: number;
+  intent?: string;
+  priorTreatment?: string;
+  gender?: string;
+  age?: number | null;
+  ecog?: number | null;
+  charlson?: number | null;
+  cancerType?: string | null;
+  stage?: string | null;
+  grade?: string | null;
+}
+
+export interface ContributionResult {
+  contributed: boolean;
+  reason?: "incomplete" | "declined" | "duplicate";
+  errors?: string[];
+  message: string;
+  datasetPatientId?: string;
+  sampleWeight?: number;
+  datasetRows?: number;
+  clinicalRows?: number;
+}
+
+export interface TreatmentDecisionRecord {
+  id: string;
+  patient_id: string | null;
+  report_id: string | null;
+  cancer_type: string | null;
+  stage: string | null;
+  decided_regimen: string;
+  decided_cycles: number;
+  treatment_intent: string | null;
+  model_regimen: string | null;
+  model_cycles: number | null;
+  overrode_model: number;
+  nccn_concordance: NccnConcordance | null;
+  nccn_message: string | null;
+  decided_by: string | null;
+  clinical_notes: string | null;
+  created_at: string;
+  contribution_status?: "pending" | "trained" | null;
+  dataset_patient_id?: string | null;
+}
+
+export interface TreatmentDecisionResult {
+  success: true;
+  decision: TreatmentDecisionRecord;
+  nccn: NccnValidation;
+  contribution: ContributionResult;
+  retrain: { triggered: boolean; pending?: number; threshold?: number };
+}
+
+export interface ModelVersion {
+  version: number;
+  status: "running" | "promoted" | "rejected" | "failed";
+  trigger: string | null;
+  dataset_rows: number | null;
+  clinical_rows: number | null;
+  accuracy: number | null;
+  accuracy_bucket: number | null;
+  previous_accuracy_bucket: number | null;
+  duration_ms: number | null;
+  message: string | null;
+  created_at: string;
+  completed_at: string | null;
+}
+
+export interface ModelStatus {
+  success: true;
+  autoRetrain: boolean;
+  isRunning: boolean;
+  threshold: number;
+  accuracyTolerance: number;
+  clinicalSampleWeight: number;
+  dataset: {
+    totalRows: number;
+    clinicalRows: number;
+    trainedRows: number | null;
+    cancerTypes: number | null;
+    accuracy: number | null;
+    accuracyBucket: number | null;
+    clinicalAccuracyBucket: number | null;
+    trainedAt: string | null;
+  };
+  learning: {
+    totalDecisions: number;
+    overrides: number;
+    overrideRate: number | null;
+    contributedRows: number;
+    pendingRows: number;
+    concordance: Partial<Record<NccnConcordance, number>>;
+  };
+  currentVersion: ModelVersion | null;
+  history: ModelVersion[];
+}
+
+/** An analysis saved for a patient that no clinician has signed off on yet. */
+export interface PendingDecision {
+  reportId: string;
+  filename: string;
+  createdAt: string;
+  cancerType: string | null;
+  stage: string | null;
+  suggestion: { regimen: string; cycles: number; intent: string; source: "ML" | "NCCN" };
+  /** False when confirming this one would not reach the dataset (missing fields). */
+  canContribute: boolean;
+  blockers: string[];
+}
+
+export interface BatchConfirmResult {
+  success: true;
+  results: {
+    reportId: string;
+    filename?: string;
+    ok: boolean;
+    error?: string;
+    nccn?: NccnValidation;
+    contribution?: ContributionResult;
+  }[];
+  confirmed: number;
+  contributed: number;
+  retrain: { triggered: boolean; pending?: number; threshold?: number };
+}
+
+export const learningApi = {
+  submitDecision: (data: {
+    patientId?: string | null;
+    reportId?: string | null;
+    parsed: ParsedReport;
+    decision: TreatmentDecisionInput;
+    primaryPrediction?: PrimaryPrediction | null;
+    ruleRecommendations?: RuleRecommendation[];
+    decidedBy?: string;
+    clinicalNotes?: string;
+    outcome?: string;
+    contributeToDataset?: boolean;
+  }) =>
+    request<TreatmentDecisionResult>(`/treatment-decision`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  modelStatus: () => request<ModelStatus>(`/model/status`),
+
+  retrain: () =>
+    request<{ success: true; started: boolean; message: string }>(`/model/retrain`, {
+      method: "POST",
+    }),
+
+  recentDecisions: (limit = 20) =>
+    request<{ success: true; decisions: TreatmentDecisionRecord[] }>(
+      `/learning/decisions?limit=${limit}`
+    ).then((r) => r.decisions),
+
+  patientDecisions: (id: string) =>
+    request<{ success: true; decisions: TreatmentDecisionRecord[] }>(
+      `/patients/${id}/decisions`
+    ).then((r) => r.decisions),
+
+  // Recommendations here are re-derived server-side from each report's stored
+  // text, so they always reflect the current model — not whatever it said when
+  // the report was first analysed.
+  pendingDecisions: (id: string) =>
+    request<{ success: true; pending: PendingDecision[]; limit: number }>(
+      `/patients/${id}/pending-decisions`
+    ),
+
+  confirmDecisions: (
+    id: string,
+    items: { reportId: string; regimen?: string; cycles?: number; intent?: string }[],
+    decidedBy?: string
+  ) =>
+    request<BatchConfirmResult>(`/patients/${id}/confirm-decisions`, {
+      method: "POST",
+      body: JSON.stringify({ items, decidedBy }),
+    }),
+};
 
 export { ApiError };
