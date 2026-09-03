@@ -198,11 +198,16 @@ function getRegimenById(id) {
   return queryOne("SELECT * FROM chemotherapy_regimens WHERE id = ?", [id]);
 }
 
-function getRegimenByName(drugName) {
-  return queryOne(
-    "SELECT * FROM chemotherapy_regimens WHERE drug_name LIKE ?",
-    [`%${drugName}%`]
-  );
+// `regimenName` is often a full protocol description (e.g. "AC-T Dose-Dense
+// (Doxorubicin + Cyclophosphamide → Paclitaxel) — HR+/HER2- Stage II adjuvant"),
+// while chemotherapy_regimens only stores single generic drug names — so this
+// looks for a stored drug name that appears WITHIN the regimen description,
+// not the other way around, and returns the first component drug found for
+// BSA-based dosing.
+function getRegimenByName(regimenName) {
+  const haystack = String(regimenName || "").toLowerCase();
+  const rows = query("SELECT * FROM chemotherapy_regimens");
+  return rows.find((r) => haystack.includes(String(r.drug_name).toLowerCase())) || null;
 }
 
 // Dashboard stats

@@ -1,9 +1,12 @@
+"use client";
+
 // Shared rendering for a full analysis result (single-report /upload and
 // multi-report /multi-upload both produce the same AnalysisResult shape and
 // render it identically). UI chrome is localized via useLanguage(); the
 // clinical VALUES themselves (cancer type, drug names, NCCN rule text,
 // ML-generated notes) come from the backend in English and are left as-is —
 // see lib/i18n/README for why.
+import { useState } from "react";
 import {
   AlertCircle,
   AlertOctagon,
@@ -23,6 +26,7 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { api, ApiError } from "@/lib/api";
 import type {
   AnalysisResult,
   DataCheck,
@@ -61,9 +65,11 @@ function CardHeading({ icon: Icon, children }: { icon: LucideIcon; children: Rea
 export function AnalysisView({
   result,
   secondaryAnalyses = [],
+  onResultChange,
 }: {
   result: AnalysisResult;
   secondaryAnalyses?: SecondaryAnalysis[];
+  onResultChange?: (result: AnalysisResult) => void;
 }) {
   const { t } = useLanguage();
   const { parsed, primaryPrediction, ruleRecommendations, dataCheck, reportClassification, agreement, uploadedSlots } = result;
@@ -85,7 +91,13 @@ export function AnalysisView({
 
       <ReportTypeCard rc={reportClassification} />
       <DataCheckCard dc={dataCheck} />
-      <ExtractedCard parsed={parsed} />
+      <ExtractedCard
+        parsed={parsed}
+        reportClassification={reportClassification}
+        filename={result.filename}
+        cancerTypeMismatch={result.cancerTypeMismatch}
+        onResultChange={onResultChange}
+      />
 
       {result.predictionBlocked ? (
         <BlockedCard reason={result.blockReason} message={result.blockMessage} markerMismatch={reportClassification.markerMismatch} />
@@ -300,7 +312,118 @@ function bmColor(v: string): string {
   return "text-slate-900";
 }
 
-function ExtractedCard({ parsed }: { parsed: ParsedReport }) {
+// Fields the parser sometimes cannot extract from report text but that a
+// doctor can supply directly. Only offered when the parser left the field
+// blank — a value the parser already detected is never made editable, so a
+// correction can never silently override what the report actually says.
+type EditableKey = "stage" | "grade" | "performanceStatus" | "age" | "height" | "weight";
+
+function EditableField({
+  def,
+  onSave,
+}: {
+  def: { label: string; type: "select" | "number"; options?: { value: string; label: string }[]; unit?: string; min?: number; max?: number };
+  onSave: (value: string) => Promise<void>;
+}) {
+  const { t } = useLanguage();
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (!editing) {
+    return (
+      <button
+        type="button"
+        onClick={() => setEditing(true)}
+        className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-left transition hover:border-brand-300 hover:bg-brand-50/40"
+      >
+        <div className="text-[11px] text-slate-400">{def.label}</div>
+        <div className="text-[13px] font-medium text-slate-300">
+          {t("analysis.extractedFields.notDetected")} · <span className="text-brand-600">{t("analysis.addValue")}</span>
+        </div>
+      </button>
+    );
+  }
+
+  return (
+    <div className="rounded-lg border border-brand-200 bg-brand-50/40 px-3 py-2">
+      <div className="text-[11px] text-slate-400">{def.label}</div>
+      {def.type === "select" ? (
+        <select
+          autoFocus
+          className="mt-1 w-full rounded border border-slate-200 bg-white px-1.5 py-1 text-[12px] text-slate-800"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        >
+          <option value="">{t("common.select")}</option>
+          {def.options?.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          autoFocus
+          type="number"
+          min={def.min}
+          max={def.max}
+          className="mt-1 w-full rounded border border-slate-200 bg-white px-1.5 py-1 text-[12px] text-slate-800"
+          value={value}
+          placeholder={def.unit}
+          onChange={(e) => setValue(e.target.value)}
+        />
+      )}
+      {error && <div className="mt-1 text-[11px] text-red-600">{error}</div>}
+      <div className="mt-1.5 flex gap-1.5">
+        <button
+          type="button"
+          disabled={!value || saving}
+          onClick={async () => {
+            setSaving(true);
+            setError(null);
+            try {
+              await onSave(value);
+              setEditing(false);
+            } catch (e) {
+              setError(e instanceof ApiError ? e.message : t("analysis.correctionFailed"));
+            } finally {
+              setSaving(false);
+            }
+          }}
+          className="rounded bg-brand-600 px-2 py-0.5 text-[11px] font-medium text-white disabled:opacity-40"
+        >
+          {saving ? t("common.saving") : t("common.save")}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setEditing(false);
+            setError(null);
+          }}
+          className="rounded px-2 py-0.5 text-[11px] text-slate-500 hover:bg-slate-100"
+        >
+          {t("common.cancel")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ExtractedCard({
+  parsed,
+  reportClassification,
+  filename,
+  cancerTypeMismatch,
+  onResultChange,
+}: {
+  parsed: ParsedReport;
+  reportClassification: AnalysisResult["reportClassification"];
+  filename: string;
+  cancerTypeMismatch: AnalysisResult["cancerTypeMismatch"];
+  onResultChange?: (result: AnalysisResult) => void;
+}) {
   const { t } = useLanguage();
   const f = (k: string) => t(`analysis.extractedFields.${k}` as never);
   const items: { l: string; v: string; c: string }[] = [];
@@ -308,8 +431,47 @@ function ExtractedCard({ parsed }: { parsed: ParsedReport }) {
     if (v != null && v !== "N/A" && v !== "") items.push({ l, v: String(v), c });
   };
 
+  const EDITABLE_DEFS: Record<
+    EditableKey,
+    { label: string; type: "select" | "number"; options?: { value: string; label: string }[]; unit?: string; min?: number; max?: number }
+  > = {
+    stage: { label: f("stage"), type: "select", options: ["0", "I", "II", "III", "IV"].map((v) => ({ value: v, label: v })) },
+    grade: {
+      label: f("grade"),
+      type: "select",
+      options: [
+        { value: "low", label: "Low" },
+        { value: "intermediate", label: "Intermediate" },
+        { value: "high", label: "High" },
+      ],
+    },
+    performanceStatus: { label: f("ecogPs"), type: "select", options: [0, 1, 2, 3, 4].map((v) => ({ value: String(v), label: `PS ${v}` })) },
+    age: { label: f("age"), type: "number", unit: f("years"), min: 1, max: 120 },
+    height: { label: t("bsa.height"), type: "number", unit: "cm", min: 30, max: 300 },
+    weight: { label: t("bsa.weight"), type: "number", unit: "kg", min: 1, max: 500 },
+  };
+  const isMissing: Record<EditableKey, boolean> = {
+    stage: !parsed.stage,
+    grade: !parsed.grade,
+    performanceStatus: parsed.performanceStatus == null,
+    age: parsed.age == null,
+    height: parsed.height == null,
+    weight: parsed.weight == null,
+  };
+
+  async function saveCorrection(key: EditableKey, value: string) {
+    const updated = await api.correctField({
+      parsed,
+      reportClassification,
+      corrections: { [key]: value },
+      filename,
+      cancerTypeMismatch,
+    });
+    onResultChange?.(updated);
+  }
+
   add(f("cancerType"), parsed.cancerType || f("notDetected"), parsed.cancerType ? "" : "text-slate-300");
-  add(f("stage"), parsed.stage || f("notDetected"), parsed.stage ? "" : "text-slate-300");
+  if (parsed.stage) add(f("stage"), parsed.stage);
   if (parsed.tStage) add(f("tStage"), "T" + parsed.tStage);
   if (parsed.nStage) add(f("nStage"), "N" + parsed.nStage);
   if (parsed.mStage) add(f("mStage"), "M" + parsed.mStage);
@@ -318,6 +480,8 @@ function ExtractedCard({ parsed }: { parsed: ParsedReport }) {
   add(f("primarySite"), parsed.primarySite);
   add(f("age"), parsed.age ? parsed.age + " " + f("years") : null);
   add(f("ecogPs"), parsed.performanceStatus != null ? "PS " + parsed.performanceStatus : null);
+  if (parsed.height != null) add(t("bsa.height"), `${parsed.height} cm`);
+  if (parsed.weight != null) add(t("bsa.weight"), `${parsed.weight} kg`);
   add(f("tumourSize"), parsed.tumorSize ? parsed.tumorSize + " cm" : null);
   if (parsed.lvInvasion) add(f("lvi"), cap(parsed.lvInvasion), parsed.lvInvasion === "present" ? "text-red-700" : "");
   if (parsed.periNeuralInvasion)
@@ -363,7 +527,7 @@ function ExtractedCard({ parsed }: { parsed: ParsedReport }) {
         <CardHeading icon={ClipboardList}>{t("analysis.extractedClinicalData")}</CardHeading>
         <Badge color={conf.color}>{conf.label}</Badge>
       </div>
-      {items.length === 0 ? (
+      {items.length === 0 && !onResultChange ? (
         <p className="mt-3 text-sm text-slate-400">{t("analysis.noExtractedData")}</p>
       ) : (
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -373,6 +537,12 @@ function ExtractedCard({ parsed }: { parsed: ParsedReport }) {
               <div className={`text-[13px] font-medium ${i.c || "text-slate-900"}`}>{i.v}</div>
             </div>
           ))}
+          {onResultChange &&
+            (Object.keys(EDITABLE_DEFS) as EditableKey[])
+              .filter((key) => isMissing[key])
+              .map((key) => (
+                <EditableField key={key} def={EDITABLE_DEFS[key]} onSave={(value) => saveCorrection(key, value)} />
+              ))}
         </div>
       )}
     </div>
@@ -491,7 +661,7 @@ function MLPredictionCard({
         <Badge color="blue">{ml.datasetCancerType || "Matched"}</Badge>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 text-center">
+      <div className="grid grid-cols-2 gap-3 text-center">
         <div className="rounded-lg bg-brand-50 py-4">
           <div className="text-2xl font-semibold tracking-tight text-brand-800">{isCont ? "Cont." : ml.predictedCycles}</div>
           <div className="text-[12px] text-slate-500">{isCont ? t("analysis.continuousTargeted") : t("analysis.chemotherapyCycles")}</div>
@@ -499,10 +669,6 @@ function MLPredictionCard({
         <div className="rounded-lg bg-slate-50 py-4">
           <div className="text-lg font-semibold text-slate-700">{ml.cycleBucket}</div>
           <div className="text-[12px] text-slate-500">{t("analysis.cycleRangeMl")}</div>
-        </div>
-        <div className="rounded-lg bg-emerald-50 py-4">
-          <div className="text-2xl font-semibold tracking-tight text-emerald-700">{ml.modelAccuracy}</div>
-          <div className="text-[12px] text-slate-500">{t("analysis.modelAccuracy")}</div>
         </div>
       </div>
 

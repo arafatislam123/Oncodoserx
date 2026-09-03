@@ -119,6 +119,8 @@ export interface ParsedReport {
   tumorMarkers?: Record<string, string | number | undefined>;
   performanceStatus?: number | null;
   age?: number | null;
+  height?: number | null;
+  weight?: number | null;
   tumorSize?: number | null;
   lvInvasion?: string | null;
   periNeuralInvasion?: string | null;
@@ -169,7 +171,6 @@ export interface PrimaryPrediction {
   similarPatients?: number;
   cancerPrevalence?: number;
   trainingPatients?: number;
-  modelAccuracy?: number;
   biomarkerNotes?: string[];
   psNote?: string;
   completenessNote?: string;
@@ -231,7 +232,6 @@ export interface AnalysisResult {
   datasetInfo: {
     totalPatients: number;
     source: string;
-    accuracy: string;
   };
 }
 
@@ -327,6 +327,16 @@ export const api = {
     if (pastedText) fd.append("pastedText", pastedText);
     return request<AnalysisResult>(`/analyze-multi`, { method: "POST", body: fd });
   },
+
+  // Manual field correction — only accepted for a field the parser left blank
+  // (e.g. stage missing from a GBM report, or height/weight for dose calc).
+  correctField: (data: {
+    parsed: ParsedReport;
+    reportClassification: AnalysisResult["reportClassification"];
+    corrections: Record<string, string | number>;
+    filename?: string;
+    cancerTypeMismatch?: AnalysisResult["cancerTypeMismatch"];
+  }) => request<AnalysisResult>(`/correct-field`, { method: "POST", body: JSON.stringify(data) }),
 
   // Cancer types
   listCancerTypes: () =>

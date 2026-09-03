@@ -169,7 +169,6 @@ function buildFinalResult(parsed, ruleResult, mlResult, filename, reportClass, d
       similarPatients:    ml.similarPatients,
       cancerPrevalence:   ml.cancerPrevalence,
       trainingPatients:   ml.trainingPatients,
-      modelAccuracy:      ml.cycleBucketAccuracy,
       biomarkerNotes:     ml.biomarkerNotes,
       psNote:             ml.psNote,
       completenessNote:   ml.completenessNote,
@@ -234,10 +233,97 @@ function buildFinalResult(parsed, ruleResult, mlResult, filename, reportClass, d
     datasetInfo: {
       totalPatients: 120000,
       source:        "SEER Program / NCCN Guidelines / ACS Cancer Statistics 2023",
-      accuracy:      "79.4% (cycle range)",
     },
   };
 }
+
+// ── Manual field correction ────────────────────────────────────────────────────
+// Lets a doctor fill in a field the parser could not extract from the report
+// text (e.g. stage missing from a GBM report, or height/weight needed for dose
+// calculation). A field the parser DID detect can never be silently overwritten
+// by a manual entry — only genuinely missing fields are correctable.
+const CORRECTABLE_FIELDS = {
+  stage: (v) => {
+    const s = String(v).trim();
+    return /^(0|IV[ABC]?|III[ABC]?|II[ABC]?|I[ABC]?|Limited|Extensive)$/i.test(s) ? s : null;
+  },
+  grade: (v) => {
+    const s = String(v).trim().toLowerCase();
+    return ["low", "intermediate", "high"].includes(s) ? s : null;
+  },
+  performanceStatus: (v) => {
+    const n = Number(v);
+    return Number.isInteger(n) && n >= 0 && n <= 4 ? n : null;
+  },
+  age: (v) => {
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0 && n <= 120 ? n : null;
+  },
+  height: (v) => {
+    const n = Number(v);
+    return Number.isFinite(n) && n >= 30 && n <= 300 ? n : null;
+  },
+  weight: (v) => {
+    const n = Number(v);
+    return Number.isFinite(n) && n >= 1 && n <= 500 ? n : null;
+  },
+};
+
+function applyCorrections(parsed, corrections) {
+  const applied = {};
+  for (const [key, rawValue] of Object.entries(corrections || {})) {
+    const validate = CORRECTABLE_FIELDS[key];
+    if (!validate) continue;
+    const current = parsed[key];
+    const isMissing = current === null || current === undefined || current === "";
+    if (!isMissing) continue; // never overwrite a value the parser already found
+    if (rawValue === null || rawValue === undefined || rawValue === "") continue;
+    const value = validate(rawValue);
+    if (value === null) continue;
+    applied[key] = value;
+  }
+  return applied;
+}
+
+// ── POST /api/correct-field — apply a doctor's manual correction to a field the
+// parser left blank, then re-run prediction with the corrected data. ──────────
+app.post("/api/correct-field", (req, res) => {
+  try {
+    const { parsed, reportClassification, corrections, filename, cancerTypeMismatch } = req.body || {};
+    if (!parsed || typeof parsed !== "object") {
+      return res.status(400).json({ error: "Missing parsed report data." });
+    }
+    if (!corrections || typeof corrections !== "object" || Object.keys(corrections).length === 0) {
+      return res.status(400).json({ error: "No corrections provided." });
+    }
+
+    const applied = applyCorrections(parsed, corrections);
+    if (Object.keys(applied).length === 0) {
+      return res.status(400).json({
+        error: "None of the submitted fields are eligible for manual correction — a field can only be corrected when the report did not detect it.",
+      });
+    }
+
+    const correctedParsed = {
+      ...parsed,
+      ...applied,
+      _manualCorrections: { ...(parsed._manualCorrections || {}), ...applied },
+    };
+
+    const reportClass = reportClassification || {};
+    const dataCheck   = checkMissingData(correctedParsed, reportClass);
+    const ruleResult  = predict(correctedParsed);
+    const mlResult    = mlPredict(correctedParsed, dataCheck);
+    const result = buildFinalResult(
+      correctedParsed, ruleResult, mlResult,
+      filename || "Report", reportClass, dataCheck, cancerTypeMismatch || null
+    );
+    res.json(result);
+  } catch (err) {
+    console.error("Correct-field error:", err.message);
+    res.status(500).json({ error: err.message || "Internal server error." });
+  }
+});
 
 // ── POST /api/analyze (single file upload) ───────────────────────────────────
 app.post("/api/analyze", upload.single("report"), async (req, res) => {
@@ -959,9 +1045,9 @@ app.post("/api/upload-and-analyze", upload.single("report"), async (req, res) =>
         if (regimen) {
           const doseResult = calculateDose({
             drug: regimen.drug_name,
-            bsa: bsaResult.bsa,
+            bsa: bsaResult.preferred_bsa,
             standardDose: regimen.standard_dose_per_m2,
-            formula: bsaResult.formula,
+            formula: bsaResult.preferred_formula,
             route: regimen.route,
             frequency: regimen.frequency,
           });
@@ -970,8 +1056,8 @@ app.post("/api/upload-and-analyze", upload.single("report"), async (req, res) =>
             report_id: report.id,
             patient_id: patient.id,
             regimen_id: regimen.id,
-            bsa_value: bsaResult.bsa,
-            bsa_formula: bsaResult.formula,
+            bsa_value: bsaResult.preferred_bsa,
+            bsa_formula: bsaResult.preferred_formula,
             standard_dose: regimen.standard_dose_per_m2,
             final_dose_mg: doseResult.final_dose_mg,
             rounded_dose_mg: doseResult.rounded_dose_mg,

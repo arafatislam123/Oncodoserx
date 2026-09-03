@@ -214,3 +214,14 @@ This is a clinical decision-support tool only. All recommendations must be revie
 ## License
 
 MIT
+
+Terminal 1 — backend (API on port 3000):
+
+
+cd C:\FibonnaciProjectOncodoseRx
+npm start
+Terminal 2 — frontend (UI on port 3001):
+
+
+cd C:\FibonnaciProjectOncodoseRx\frontend
+npm run dev

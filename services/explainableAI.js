@@ -5,6 +5,8 @@
 
 "use strict";
 
+const { calculateBSA } = require("./bsaCalculator");
+
 /**
  * Generate explanation for BSA calculation
  */
@@ -141,12 +143,14 @@ function generateComprehensiveExplanation(analysisResult) {
 
   // BSA explanation
   if (analysisResult.parsed?.height && analysisResult.parsed?.weight) {
+    const bsaCalc = calculateBSA(analysisResult.parsed.height, analysisResult.parsed.weight, analysisResult.parsed.bsaFormula || "Mosteller");
     const bsaResult = {
-      height_cm: analysisResult.parsed.height,
-      weight_kg: analysisResult.parsed.weight,
-      bsa: analysisResult.parsed.bsa || calculateBSA(analysisResult.parsed.height, analysisResult.parsed.weight),
-      formula: analysisResult.parsed.bsaFormula || "Mosteller",
-      bmi: analysisResult.parsed.bmi || calculateBMI(analysisResult.parsed.height, analysisResult.parsed.weight),
+      height_cm: bsaCalc.height_cm,
+      weight_kg: bsaCalc.weight_kg,
+      bsa: bsaCalc.preferred_bsa,
+      formula: bsaCalc.preferred_formula,
+      bmi: bsaCalc.bmi,
+      calculation: bsaCalc.preferred_calculation,
     };
     allExplanations.push(...explainBSACalculation(bsaResult));
   }

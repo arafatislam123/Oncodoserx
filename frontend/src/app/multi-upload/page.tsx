@@ -222,7 +222,7 @@ export default function MultiUploadPage() {
 
       {result && (
         <>
-          <AnalysisView result={result} secondaryAnalyses={secondaryAnalyses} />
+          <AnalysisView result={result} secondaryAnalyses={secondaryAnalyses} onResultChange={setResult} />
 
           {isBreastCancer(selectedType) && !result.predictionBlocked && (result.dataCheck.conditionalReports?.length ?? 0) > 0 && (
             <BreastConditionalWorkflow

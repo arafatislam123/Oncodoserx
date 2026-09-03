@@ -785,6 +785,43 @@ function extractAge(text) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// HEIGHT / WEIGHT (for BSA / dose calculation)
+// ─────────────────────────────────────────────────────────────────────────────
+function extractHeight(text) {
+  const t = norm(text);
+  const cm =
+    t.match(/\bhe?igh?t\s*[:\s]*(\d{2,3}(?:\.\d+)?)\s*cm\b/) ||
+    t.match(/\bht\s*[:\s]*(\d{2,3}(?:\.\d+)?)\s*cm\b/);
+  if (cm) return parseFloat(cm[1]);
+
+  const m = t.match(/\bhe?igh?t\s*[:\s]*(\d(?:\.\d+)?)\s*m\b/);
+  if (m) return parseFloat(m[1]) * 100;
+
+  const ftIn =
+    t.match(/\bhe?igh?t\s*[:\s]*(\d)\s*(?:ft|feet|')\s*(\d{1,2})\s*(?:in|inch(?:es)?|")?\b/) ||
+    t.match(/\bht\s*[:\s]*(\d)\s*(?:ft|feet|')\s*(\d{1,2})\s*(?:in|inch(?:es)?|")?\b/);
+  if (ftIn) return Math.round((parseInt(ftIn[1]) * 12 + parseInt(ftIn[2])) * 2.54 * 10) / 10;
+
+  return null;
+}
+
+function extractWeight(text) {
+  const t = norm(text);
+  const kg =
+    t.match(/\bwe?igh?t\s*[:\s]*(\d{1,3}(?:\.\d+)?)\s*kg\b/) ||
+    t.match(/\bwt\s*[:\s]*(\d{1,3}(?:\.\d+)?)\s*kg\b/) ||
+    t.match(/\bbody\s*weight\s*[:\s]*(\d{1,3}(?:\.\d+)?)\s*kg\b/);
+  if (kg) return parseFloat(kg[1]);
+
+  const lb =
+    t.match(/\bwe?igh?t\s*[:\s]*(\d{2,3}(?:\.\d+)?)\s*(?:lb|lbs|pounds?)\b/) ||
+    t.match(/\bwt\s*[:\s]*(\d{2,3}(?:\.\d+)?)\s*(?:lb|lbs|pounds?)\b/);
+  if (lb) return Math.round(parseFloat(lb[1]) * 0.453592 * 10) / 10;
+
+  return null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // HISTOLOGY
 // ─────────────────────────────────────────────────────────────────────────────
 function extractHistology(text) {
@@ -871,6 +908,8 @@ function parseReport(text) {
   const tumorMarkers = extractTumorMarkers(text);
   const ps           = extractPS(text);
   const age          = extractAge(text);
+  const height       = extractHeight(text);
+  const weight       = extractWeight(text);
   const histology    = extractHistology(text);
   const primarySite  = extractPrimarySite(text);
   const invasion     = extractInvasion(text);
@@ -900,6 +939,8 @@ function parseReport(text) {
     tumorMarkers,
     performanceStatus: ps,
     age,
+    height,
+    weight,
     tumorSize,
     lvInvasion:       invasion.lvInvasion,
     periNeuralInvasion: invasion.periNeuralInvasion,
