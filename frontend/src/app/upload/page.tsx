@@ -5,8 +5,10 @@ import Link from "next/link";
 import { FileText, Upload, X } from "lucide-react";
 import { api, ApiError, type AnalysisResult } from "@/lib/api";
 import { AnalysisView } from "@/components/AnalysisView";
+import { useLanguage } from "@/lib/i18n/context";
 
 export default function UploadPage() {
+  const { t } = useLanguage();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -32,17 +34,16 @@ export default function UploadPage() {
   return (
     <div className="space-y-6">
       <div>
-        <span className="section-label">Analysis</span>
+        <span className="section-label">{t("upload.eyebrow")}</span>
         <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold tracking-tight text-slate-900">
-          <Upload size={20} strokeWidth={2} className="text-brand-700" /> Upload Report
+          <Upload size={20} strokeWidth={2} className="text-brand-700" /> {t("upload.title")}
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Upload a single PDF or image of an oncology report — OCR and NLP extract cancer type, stage, regimen and
-          dose. For multiple reports (biopsy + imaging + labs), use{" "}
+          {t("upload.subtitle")}{" "}
           <Link href="/multi-upload" className="font-medium text-brand-700 hover:underline">
-            Multi-Report Intake
+            {t("upload.multiReportIntake")}
           </Link>{" "}
-          instead.
+          {t("upload.subtitleLinkSuffix")}
         </p>
       </div>
 
@@ -65,13 +66,9 @@ export default function UploadPage() {
         >
           <FileText size={28} strokeWidth={1.5} className="mx-auto text-slate-300" />
           <p className="mt-3 text-sm text-slate-600">
-            {file ? (
-              <span className="font-medium text-slate-800">{file.name}</span>
-            ) : (
-              "Drag & drop a PDF or image here, or click to browse"
-            )}
+            {file ? <span className="font-medium text-slate-800">{file.name}</span> : t("upload.dropText")}
           </p>
-          <p className="mt-1 text-xs text-slate-400">Supported: PDF, PNG, JPG, JPEG, TIFF (max 20 MB)</p>
+          <p className="mt-1 text-xs text-slate-400">{t("upload.supported")}</p>
           <input
             type="file"
             accept=".pdf,.txt,image/*"
@@ -89,10 +86,10 @@ export default function UploadPage() {
             }}
             className="btn-secondary"
           >
-            <X size={14} /> Clear
+            <X size={14} /> {t("common.clear")}
           </button>
           <button disabled={!file || loading} className="btn-primary">
-            {loading ? "Analyzing…" : "Analyze Report"}
+            {loading ? t("upload.analyzing") : t("upload.analyze")}
           </button>
         </div>
       </form>

@@ -4,8 +4,10 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { api, ApiError, type Patient, type PatientDoseResult, type PatientReport } from "@/lib/api";
+import { useLanguage } from "@/lib/i18n/context";
 
 export default function PatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { t } = useLanguage();
   const { id } = use(params);
   const [patient, setPatient] = useState<Patient | null>(null);
   const [reports, setReports] = useState<PatientReport[]>([]);
@@ -24,7 +26,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <p className="text-slate-500">Loading…</p>;
+  if (loading) return <p className="text-slate-500">{t("common.loading")}</p>;
 
   if (err) {
     return (
@@ -43,7 +45,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
     <div className="space-y-6">
       <div>
         <Link href="/patients" className="flex items-center gap-1 text-[13px] font-medium text-brand-700 hover:underline">
-          <ArrowLeft size={13} /> Back to Patients
+          <ArrowLeft size={13} /> {t("patientDetail.back")}
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
           {patient.first_name} {patient.last_name}
@@ -51,24 +53,24 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       <div className="card grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        <Field label="Date of Birth" value={patient.date_of_birth} />
-        <Field label="Gender" value={patient.gender} />
-        <Field label="Height" value={patient.height_cm ? `${patient.height_cm} cm` : "-"} />
-        <Field label="Weight" value={patient.weight_kg ? `${patient.weight_kg} kg` : "-"} />
-        <Field label="BMI" value={bmi} />
+        <Field label={t("patientDetail.dob")} value={patient.date_of_birth} />
+        <Field label={t("patientDetail.gender")} value={patient.gender} />
+        <Field label={t("patientDetail.height")} value={patient.height_cm ? `${patient.height_cm} cm` : "-"} />
+        <Field label={t("patientDetail.weight")} value={patient.weight_kg ? `${patient.weight_kg} kg` : "-"} />
+        <Field label={t("patientDetail.bmi")} value={bmi} />
       </div>
 
       <div className="card overflow-x-auto">
-        <span className="section-label">Reports ({reports.length})</span>
+        <span className="section-label">{t("patientDetail.reports")} ({reports.length})</span>
         {reports.length === 0 ? (
-          <p className="mt-2 text-sm text-slate-400">No reports uploaded for this patient yet.</p>
+          <p className="mt-2 text-sm text-slate-400">{t("patientDetail.noReports")}</p>
         ) : (
           <table className="mt-3 w-full text-sm">
             <thead className="border-b border-slate-100 text-left">
               <tr>
-                <th className="section-label px-3 py-2 font-semibold">Filename</th>
-                <th className="section-label px-3 py-2 font-semibold">Status</th>
-                <th className="section-label px-3 py-2 font-semibold">Date</th>
+                <th className="section-label px-3 py-2 font-semibold">{t("patientDetail.columnFilename")}</th>
+                <th className="section-label px-3 py-2 font-semibold">{t("patientDetail.columnStatus")}</th>
+                <th className="section-label px-3 py-2 font-semibold">{t("patientDetail.columnDate")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -95,19 +97,19 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       <div className="card overflow-x-auto">
-        <span className="section-label">Dose Results ({doseResults.length})</span>
+        <span className="section-label">{t("patientDetail.doseResults")} ({doseResults.length})</span>
         {doseResults.length === 0 ? (
-          <p className="mt-2 text-sm text-slate-400">No dose calculations recorded for this patient yet.</p>
+          <p className="mt-2 text-sm text-slate-400">{t("patientDetail.noDoseResults")}</p>
         ) : (
           <table className="mt-3 w-full text-sm">
             <thead className="border-b border-slate-100 text-left">
               <tr>
-                <th className="section-label px-3 py-2 font-semibold">Drug</th>
-                <th className="section-label px-3 py-2 font-semibold">BSA</th>
-                <th className="section-label px-3 py-2 font-semibold">Standard Dose</th>
-                <th className="section-label px-3 py-2 font-semibold">Final Dose</th>
-                <th className="section-label px-3 py-2 font-semibold">Rounded Dose</th>
-                <th className="section-label px-3 py-2 font-semibold">Date</th>
+                <th className="section-label px-3 py-2 font-semibold">{t("patientDetail.columnDrug")}</th>
+                <th className="section-label px-3 py-2 font-semibold">{t("patientDetail.columnBsa")}</th>
+                <th className="section-label px-3 py-2 font-semibold">{t("patientDetail.columnStandardDose")}</th>
+                <th className="section-label px-3 py-2 font-semibold">{t("patientDetail.columnFinalDose")}</th>
+                <th className="section-label px-3 py-2 font-semibold">{t("patientDetail.columnRoundedDose")}</th>
+                <th className="section-label px-3 py-2 font-semibold">{t("patientDetail.columnDate")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

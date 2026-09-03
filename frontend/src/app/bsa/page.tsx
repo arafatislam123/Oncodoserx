@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { Ruler } from "lucide-react";
 import { api, ApiError, type BSAResult } from "@/lib/api";
+import { useLanguage } from "@/lib/i18n/context";
 
 const FORMULAS = ["Mosteller", "Du Bois", "Haycock", "Boyd", "Gehan & George"];
 
 export default function BSAPage() {
+  const { t } = useLanguage();
   const [height, setHeight] = useState("170");
   const [weight, setWeight] = useState("70");
   const [formula, setFormula] = useState("Mosteller");
@@ -32,16 +34,16 @@ export default function BSAPage() {
   return (
     <div className="space-y-6">
       <div>
-        <span className="section-label">Calculations</span>
+        <span className="section-label">{t("bsa.eyebrow")}</span>
         <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold tracking-tight text-slate-900">
-          <Ruler size={20} strokeWidth={2} className="text-brand-700" /> BSA Calculator
+          <Ruler size={20} strokeWidth={2} className="text-brand-700" /> {t("bsa.title")}
         </h1>
-        <p className="mt-1 text-sm text-slate-500">Calculate Body Surface Area using multiple clinical formulas.</p>
+        <p className="mt-1 text-sm text-slate-500">{t("bsa.subtitle")}</p>
       </div>
 
       <form onSubmit={onSubmit} className="card grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-          <label className="field-label">Height (cm)</label>
+          <label className="field-label">{t("bsa.height")}</label>
           <input
             className="field-input"
             type="number"
@@ -54,7 +56,7 @@ export default function BSAPage() {
           />
         </div>
         <div>
-          <label className="field-label">Weight (kg)</label>
+          <label className="field-label">{t("bsa.weight")}</label>
           <input
             className="field-input"
             type="number"
@@ -67,7 +69,7 @@ export default function BSAPage() {
           />
         </div>
         <div>
-          <label className="field-label">Preferred formula</label>
+          <label className="field-label">{t("bsa.formula")}</label>
           <select className="field-input" value={formula} onChange={(e) => setFormula(e.target.value)}>
             {FORMULAS.map((f) => (
               <option key={f} value={f}>
@@ -78,7 +80,7 @@ export default function BSAPage() {
         </div>
         <div className="sm:col-span-3">
           <button disabled={loading} className="btn-primary">
-            {loading ? "Calculating…" : "Calculate BSA"}
+            {loading ? t("bsa.calculating") : t("bsa.calculate")}
           </button>
         </div>
       </form>
@@ -90,18 +92,18 @@ export default function BSAPage() {
       {result && (
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           <div className="card">
-            <span className="section-label">Result</span>
+            <span className="section-label">{t("bsa.result")}</span>
             <dl className="mt-3 space-y-1.5 text-sm">
-              <Row k="Preferred formula" v={result.preferred_formula} />
+              <Row k={t("bsa.preferredFormula")} v={result.preferred_formula} />
               <Row k="BSA" v={`${result.preferred_bsa} m²`} />
-              <Row k="Calculation" v={result.preferred_calculation} />
-              <Row k="Average BSA (all formulas)" v={`${result.average_bsa} m²`} />
-              <Row k="BMI" v={result.bmi} />
-              <Row k="Interpretation" v={result.interpretation} />
+              <Row k={t("bsa.calculation")} v={result.preferred_calculation} />
+              <Row k={t("bsa.averageBsa")} v={`${result.average_bsa} m²`} />
+              <Row k={t("bsa.bmi")} v={result.bmi} />
+              <Row k={t("bsa.interpretation")} v={result.interpretation} />
             </dl>
           </div>
           <div className="card">
-            <span className="section-label">All Formulas</span>
+            <span className="section-label">{t("bsa.allFormulas")}</span>
             <ul className="mt-3 divide-y divide-slate-100">
               {Object.entries(result.all_formulas).map(([name, f]) => (
                 <li key={name} className="flex items-center justify-between py-2 text-sm">

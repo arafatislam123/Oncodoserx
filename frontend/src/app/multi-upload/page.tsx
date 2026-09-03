@@ -26,6 +26,7 @@ import {
 } from "@/lib/api";
 import { AnalysisView, Badge, CardHeading } from "@/components/AnalysisView";
 import { SlotTypeIcon } from "@/lib/icons";
+import { useLanguage } from "@/lib/i18n/context";
 import {
   ALLOWED_EXTS,
   DEFAULT_SLOTS,
@@ -46,6 +47,7 @@ interface BulkItem {
 }
 
 export default function MultiUploadPage() {
+  const { t } = useLanguage();
   const [cancerTypes, setCancerTypes] = useState<CancerType[]>([]);
   const [ctSearch, setCtSearch] = useState("");
   const [ctOpen, setCtOpen] = useState(false);
@@ -113,7 +115,7 @@ export default function MultiUploadPage() {
       }
       return next;
     });
-    if (rejected) setErr(`${rejected} file(s) skipped — unsupported format.`);
+    if (rejected) setErr(`${rejected} ${t("multiUpload.filesSkipped")}`);
   }
 
   const filledCount = Object.keys(slotFiles).length;
@@ -121,7 +123,7 @@ export default function MultiUploadPage() {
 
   async function onAnalyze() {
     if (!selectedType) {
-      setErr("Please select a cancer type first.");
+      setErr(t("multiUpload.selectCancerTypeFirst"));
       return;
     }
     const items: { slotId: string; file: File }[] = [];
@@ -130,7 +132,7 @@ export default function MultiUploadPage() {
       items.push({ slotId: item.assignedSlot || "__unassigned__", file: item.file });
     }
     if (items.length === 0 && !pastedText.trim()) {
-      setErr("Please upload at least one report.");
+      setErr(t("multiUpload.uploadAtLeastOne"));
       return;
     }
 
@@ -152,14 +154,11 @@ export default function MultiUploadPage() {
   return (
     <div className="space-y-6">
       <div>
-        <span className="section-label">Analysis</span>
+        <span className="section-label">{t("multiUpload.eyebrow")}</span>
         <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold tracking-tight text-slate-900">
-          <FolderOpen size={20} strokeWidth={2} className="text-brand-700" /> Multi-Report Intake
+          <FolderOpen size={20} strokeWidth={2} className="text-brand-700" /> {t("multiUpload.title")}
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Select a cancer type, then upload multiple reports (histopathology, imaging, labs, molecular panels) for
-          a combined analysis.
-        </p>
+        <p className="mt-1 text-sm text-slate-500">{t("multiUpload.subtitle")}</p>
       </div>
 
       <CancerTypeSelector
@@ -180,10 +179,10 @@ export default function MultiUploadPage() {
       {selectedType && (
         <>
           <div className="card">
-            <CardHeading icon={FileText}>Report Slots</CardHeading>
+            <CardHeading icon={FileText}>{t("multiUpload.reportSlots")}</CardHeading>
             <p className="mt-1 text-sm text-slate-500">
-              {filledCount} / {slots.length} filled via individual slots
-              {bulkQueue.length > 0 ? ` · ${bulkQueue.length} in bulk queue` : ""}
+              {filledCount} / {slots.length} {t("multiUpload.filledVia")}
+              {bulkQueue.length > 0 ? ` · ${bulkQueue.length} ${t("multiUpload.inBulkQueue")}` : ""}
             </p>
             <div className="mt-4 space-y-3">
               {slots.map((slot) => (
@@ -200,10 +199,10 @@ export default function MultiUploadPage() {
           <BulkUpload queue={bulkQueue} setQueue={setBulkQueue} slots={slots} onAddFiles={addBulkFiles} />
 
           <div className="card">
-            <CardHeading icon={FileText}>Or Paste Report Text</CardHeading>
+            <CardHeading icon={FileText}>{t("multiUpload.pasteText")}</CardHeading>
             <textarea
               className="field-input mt-2 h-24 resize-y"
-              placeholder="Paste additional report text here (optional)…"
+              placeholder={t("multiUpload.pasteTextPlaceholder")}
               value={pastedText}
               onChange={(e) => setPastedText(e.target.value)}
             />
@@ -211,7 +210,7 @@ export default function MultiUploadPage() {
 
           <div className="flex justify-end">
             <button className="btn-primary" disabled={!canAnalyze || loading} onClick={onAnalyze}>
-              {loading ? "Analyzing…" : "Analyze All Reports"}
+              {loading ? t("multiUpload.analyzing") : t("multiUpload.analyzeAll")}
             </button>
           </div>
         </>
@@ -257,6 +256,7 @@ function CancerTypeSelector({
   onSelect: (ct: CancerType) => void;
   onClear: () => void;
 }) {
+  const { t } = useLanguage();
   const filtered = cancerTypes.filter(
     (ct) => ct.label.toLowerCase().includes(search.toLowerCase()) || ct.category.toLowerCase().includes(search.toLowerCase())
   );
@@ -269,22 +269,22 @@ function CancerTypeSelector({
             <Target size={16} strokeWidth={2} />
           </span>
           <div>
-            <div className="section-label">Analyzing for</div>
+            <div className="section-label">{t("multiUpload.analyzingFor")}</div>
             <div className="text-[15px] font-medium text-slate-900">{selectedLabel}</div>
           </div>
         </div>
-        <button className="btn-secondary" onClick={onClear}>Change</button>
+        <button className="btn-secondary" onClick={onClear}>{t("multiUpload.change")}</button>
       </div>
     );
   }
 
   return (
     <div className="card relative">
-      <label className="field-label">Cancer type</label>
+      <label className="field-label">{t("multiUpload.cancerType")}</label>
       <div className="relative mt-1.5">
         <input
           className="field-input mt-0 pr-8"
-          placeholder="Search cancer type…"
+          placeholder={t("multiUpload.searchCancerType")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onFocus={() => setOpen(true)}
@@ -294,7 +294,7 @@ function CancerTypeSelector({
       {open && (
         <div className="absolute left-5 right-5 z-10 mt-1 max-h-72 overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg">
           {filtered.length === 0 ? (
-            <div className="px-3 py-2 text-sm text-slate-400">No cancer types found</div>
+            <div className="px-3 py-2 text-sm text-slate-400">{t("multiUpload.noCancerTypesFound")}</div>
           ) : (
             filtered.map((ct) => (
               <button
@@ -318,14 +318,15 @@ function CancerTypeSelector({
 }
 
 function SlotUpload({ slot, file, onFile }: { slot: SlotDef; file: File | null; onFile: (f: File | null) => void }) {
+  const { t } = useLanguage();
   const [drag, setDrag] = useState(false);
   const badge = slot.isConditional
-    ? { text: "Conditional", cls: "bg-brand-50 text-brand-700" }
+    ? { text: t("multiUpload.conditional"), cls: "bg-brand-50 text-brand-700" }
     : slot.required
-    ? { text: "Required", cls: "bg-red-50 text-red-700" }
+    ? { text: t("multiUpload.required"), cls: "bg-red-50 text-red-700" }
     : slot.reason
-    ? { text: "Important", cls: "bg-amber-50 text-amber-700" }
-    : { text: "Optional", cls: "bg-slate-100 text-slate-500" };
+    ? { text: t("multiUpload.important"), cls: "bg-amber-50 text-amber-700" }
+    : { text: t("multiUpload.optional"), cls: "bg-slate-100 text-slate-500" };
 
   return (
     <div className="rounded-lg border border-slate-200">
@@ -366,8 +367,8 @@ function SlotUpload({ slot, file, onFile }: { slot: SlotDef; file: File | null; 
             }`}
           >
             <FileText size={17} strokeWidth={1.5} className="text-slate-300" />
-            <span className="mt-1 text-[12px] text-slate-500">Drop file or click to upload</span>
-            <span className="text-[11px] text-slate-400">PDF · TXT · PNG · JPG · WEBP</span>
+            <span className="mt-1 text-[12px] text-slate-500">{t("multiUpload.dropOrClick")}</span>
+            <span className="text-[11px] text-slate-400">{t("multiUpload.supportedShort")}</span>
             <input
               type="file"
               accept=".pdf,.txt,.png,.jpg,.jpeg,.webp"
@@ -392,14 +393,13 @@ function BulkUpload({
   slots: SlotDef[];
   onAddFiles: (files: FileList | File[]) => void;
 }) {
+  const { t } = useLanguage();
   const [drag, setDrag] = useState(false);
 
   return (
     <div className="card">
-      <CardHeading icon={Package}>Bulk Upload</CardHeading>
-      <p className="mt-1 text-sm text-slate-500">
-        Drop several files at once — each is auto-matched to a slot by filename; reassign any that guess wrong.
-      </p>
+      <CardHeading icon={Package}>{t("multiUpload.bulkUpload")}</CardHeading>
+      <p className="mt-1 text-sm text-slate-500">{t("multiUpload.bulkUploadDesc")}</p>
       <label
         onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
         onDragLeave={() => setDrag(false)}
@@ -413,7 +413,7 @@ function BulkUpload({
         }`}
       >
         <Package size={24} strokeWidth={1.5} className="text-slate-300" />
-        <span className="mt-1.5 text-[13px] text-slate-500">Drop multiple files here, or click to browse</span>
+        <span className="mt-1.5 text-[13px] text-slate-500">{t("multiUpload.bulkDropText")}</span>
         <input
           type="file"
           multiple
@@ -426,8 +426,8 @@ function BulkUpload({
       {queue.length > 0 && (
         <div className="mt-4 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[13px] font-medium text-slate-600">{queue.length} file{queue.length > 1 ? "s" : ""} queued</span>
-            <button className="text-[12px] text-slate-400 hover:text-red-600" onClick={() => setQueue([])}>Clear all</button>
+            <span className="text-[13px] font-medium text-slate-600">{queue.length} {t("multiUpload.filesQueued")}</span>
+            <button className="text-[12px] text-slate-400 hover:text-red-600" onClick={() => setQueue([])}>{t("multiUpload.clearAll")}</button>
           </div>
           {queue.map((item, idx) => (
             <div key={idx} className="flex items-center gap-3 rounded-lg bg-slate-50 px-3 py-2 text-sm">
@@ -438,7 +438,7 @@ function BulkUpload({
               </div>
               <span className={`flex items-center gap-1 text-[12px] ${item.assignedSlot ? "text-emerald-700" : "text-amber-700"}`}>
                 {item.assignedSlot ? <Check size={12} /> : <AlertTriangle size={12} />}
-                {item.assignedSlot ? SLOT_NAMES[item.assignedSlot] || item.assignedSlot : "Unrecognised"}
+                {item.assignedSlot ? SLOT_NAMES[item.assignedSlot] || item.assignedSlot : t("multiUpload.unrecognised")}
               </span>
               <select
                 className="rounded-md border border-slate-200 px-2 py-1 text-xs"
@@ -448,7 +448,7 @@ function BulkUpload({
                   setQueue((prev) => prev.map((q, i) => (i === idx ? { ...q, assignedSlot: v } : q)));
                 }}
               >
-                <option value="">— assign to slot —</option>
+                <option value="">{t("multiUpload.assignToSlot")}</option>
                 {slots.map((s) => (
                   <option key={s.id} value={s.id}>{SLOT_NAMES[s.id] || s.title}</option>
                 ))}
@@ -469,7 +469,8 @@ function BulkUpload({
 
 function recommendConditionalReports(
   result: AnalysisResult,
-  conditionalReports: ReportRequirement[]
+  conditionalReports: ReportRequirement[],
+  t: (key: "multiUpload.reasonGenomic" | "multiUpload.reasonBrca" | "multiUpload.reasonNodal") => string
 ): (ReportRequirement & { reasonOverride: string })[] {
   const parsed = result.parsed;
   const bm = parsed.biomarkers || {};
@@ -482,14 +483,14 @@ function recommendConditionalReports(
 
   if (isERPosHER2Neg && isEarlyStage) {
     const r = find("genomic");
-    if (r) recommended.push({ ...r, reasonOverride: "ER+/HER2- early-stage cancer — Genomic Risk Score recommended to assess chemotherapy benefit" });
+    if (r) recommended.push({ ...r, reasonOverride: t("multiUpload.reasonGenomic") });
   }
   if (isYoungPatient) {
     const r = find("brca");
-    if (r) recommended.push({ ...r, reasonOverride: "Patient age ≤50 — BRCA1/BRCA2 testing recommended" });
+    if (r) recommended.push({ ...r, reasonOverride: t("multiUpload.reasonBrca") });
   }
   const nodal = find("nodal");
-  if (nodal) recommended.push({ ...nodal, reasonOverride: "Sentinel Node Biopsy / Axillary Evaluation recommended for accurate nodal staging" });
+  if (nodal) recommended.push({ ...nodal, reasonOverride: t("multiUpload.reasonNodal") });
 
   return recommended;
 }
@@ -503,7 +504,11 @@ function BreastConditionalWorkflow({
   conditionalReports: ReportRequirement[];
   onResults: (results: SecondaryAnalysis[]) => void;
 }) {
-  const recommended = useMemo(() => recommendConditionalReports(primaryResult, conditionalReports), [primaryResult, conditionalReports]);
+  const { t } = useLanguage();
+  const recommended = useMemo(
+    () => recommendConditionalReports(primaryResult, conditionalReports, t),
+    [primaryResult, conditionalReports, t]
+  );
   const [files, setFiles] = useState<Record<string, File>>({});
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -531,14 +536,11 @@ function BreastConditionalWorkflow({
     <div className="card border-2 border-brand-200 bg-brand-50/20">
       <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-900">
-          <Target size={16} className="text-brand-700" /> Breast Cancer — Additional Reports Recommended
+          <Target size={16} className="text-brand-700" /> {t("multiUpload.breastAdditional")}
         </h2>
-        <Badge color="blue">{recommended.length} needed</Badge>
+        <Badge color="blue">{recommended.length} {t("multiUpload.needed")}</Badge>
       </div>
-      <p className="mt-2 text-sm text-slate-500">
-        Based on the primary analysis, the following additional reports are recommended to refine the chemotherapy
-        plan:
-      </p>
+      <p className="mt-2 text-sm text-slate-500">{t("multiUpload.breastAdditionalDesc")}</p>
 
       <div className="mt-4 space-y-3">
         {recommended.map((r, i) => (
@@ -552,7 +554,7 @@ function BreastConditionalWorkflow({
                 <div className="text-[12px] text-slate-400">{r.reasonOverride}</div>
               </div>
               <span className={`badge ${i === 0 ? "bg-brand-50 text-brand-700" : "bg-slate-100 text-slate-500"}`}>
-                {i === 0 ? "Primary" : "Recommended"}
+                {i === 0 ? t("multiUpload.primary") : t("multiUpload.recommended")}
               </span>
             </div>
             <div className="mt-2">
@@ -572,8 +574,8 @@ function BreastConditionalWorkflow({
                 </div>
               ) : (
                 <label className="flex cursor-pointer flex-col items-center rounded-lg border-2 border-dashed border-slate-200 py-3 text-center hover:border-slate-300">
-                  <span className="text-[12px] text-slate-500">Drop file or click to upload</span>
-                  <span className="text-[11px] text-slate-400">PDF · TXT · PNG · JPG · WEBP</span>
+                  <span className="text-[12px] text-slate-500">{t("multiUpload.dropOrClick")}</span>
+                  <span className="text-[11px] text-slate-400">{t("multiUpload.supportedShort")}</span>
                   <input
                     type="file"
                     accept=".pdf,.txt,.png,.jpg,.jpeg,.webp"
@@ -591,7 +593,7 @@ function BreastConditionalWorkflow({
       </div>
 
       <button className="btn-primary mt-4" disabled={Object.keys(files).length === 0 || loading} onClick={analyze}>
-        {loading ? "Analyzing conditional reports…" : "Analyze Conditional Reports"}
+        {loading ? t("multiUpload.analyzingConditional") : t("multiUpload.analyzeConditional")}
       </button>
 
       {err && <p className="mt-2 text-sm text-red-700">{err}</p>}
@@ -602,13 +604,14 @@ function BreastConditionalWorkflow({
 }
 
 function ConditionalResultsView({ results }: { results: SecondaryAnalysis[] }) {
+  const { t } = useLanguage();
   return (
     <div className="mt-4 rounded-lg border-2 border-emerald-200 bg-emerald-50/30 p-4">
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-[14px] font-semibold text-slate-900">
-          <Sparkles size={15} className="text-emerald-600" /> Conditional Reports Analysis
+          <Sparkles size={15} className="text-emerald-600" /> {t("multiUpload.conditionalAnalysis")}
         </h3>
-        <Badge color="green">{results.length} analyzed</Badge>
+        <Badge color="green">{results.length} {t("multiUpload.analyzed")}</Badge>
       </div>
       <div className="mt-3 space-y-3">
         {results.map((a, i) => (
@@ -632,12 +635,12 @@ function ConditionalResultsView({ results }: { results: SecondaryAnalysis[] }) {
             )}
             {a.reportType === "brca" && a.brcaResult && (
               <div className="mt-2 flex items-center gap-2 rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-800">
-                <Dna size={14} /> <b>BRCA Result:</b> {a.brcaResult}
+                <Dna size={14} /> <b>{t("multiUpload.brcaResult")}</b> {a.brcaResult}
               </div>
             )}
             {a.reportType === "nodal" && a.nodalStatus && (
               <div className="mt-2 flex items-center gap-2 rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-800">
-                <Target size={14} /> <b>Nodal Status:</b> {a.nodalStatus}
+                <Target size={14} /> <b>{t("multiUpload.nodalStatus")}</b> {a.nodalStatus}
               </div>
             )}
           </div>
@@ -648,10 +651,11 @@ function ConditionalResultsView({ results }: { results: SecondaryAnalysis[] }) {
 }
 
 function ChemoAdjustmentBanner({ adj }: { adj: NonNullable<SecondaryAnalysis["chemotherapyAdjustments"]> }) {
+  const { t } = useLanguage();
   const cfg: Record<string, { title: string; cls: string; icon: typeof CheckCircle2 }> = {
-    avoid: { title: "Chemotherapy Can Be Safely Avoided", cls: "border-emerald-300 bg-emerald-50 text-emerald-800", icon: CheckCircle2 },
-    recommend: { title: "Chemotherapy Recommended", cls: "border-amber-300 bg-amber-50 text-amber-800", icon: AlertTriangle },
-    parp_eligible: { title: "PARP Inhibitor Eligible", cls: "border-purple-300 bg-purple-50 text-purple-800", icon: Dna },
+    avoid: { title: t("multiUpload.chemoAvoid"), cls: "border-emerald-300 bg-emerald-50 text-emerald-800", icon: CheckCircle2 },
+    recommend: { title: t("multiUpload.chemoRecommend"), cls: "border-amber-300 bg-amber-50 text-amber-800", icon: AlertTriangle },
+    parp_eligible: { title: t("multiUpload.parpEligible"), cls: "border-purple-300 bg-purple-50 text-purple-800", icon: Dna },
   };
   const c = cfg[adj.action];
   if (!c) return null;
@@ -660,7 +664,7 @@ function ChemoAdjustmentBanner({ adj }: { adj: NonNullable<SecondaryAnalysis["ch
     <div className={`mt-2 rounded-md border px-3 py-2 text-sm ${c.cls}`}>
       <b className="flex items-center gap-1.5"><Icon size={14} /> {c.title}</b>
       <div className="mt-1 text-xs">{adj.reason}</div>
-      <div className="mt-1 text-xs"><b>Plan:</b> {adj.alternative}</div>
+      <div className="mt-1 text-xs"><b>{t("multiUpload.plan")}</b> {adj.alternative}</div>
     </div>
   );
 }

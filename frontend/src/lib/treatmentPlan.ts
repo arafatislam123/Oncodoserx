@@ -1,14 +1,18 @@
 // Client-side treatment plan generator — ported from public/app.js
 // (generateTreatmentPlan). This is a presentational heuristic layer on top
-// of the ML prediction; it does not call the API. Keep in sync with
-// public/app.js if that file is still in use.
+// of the ML prediction; it does not call the API. The supportive-care /
+// monitoring / notes text is authored content (see lib/i18n/treatmentPlan.*)
+// so it's localized; `intent` stays a semantic key ("curative" etc.) for the
+// UI to translate via common.intent*.
 import type { ParsedReport, PrimaryPrediction, SecondaryAnalysis } from "./api";
+import type { Lang } from "./i18n/context";
+import { getTreatmentPlanContent } from "./i18n/treatmentPlanDict";
 
 export interface TreatmentPlan {
   drugs: string[];
   interval: string;
   duration: string;
-  intent: string;
+  intent: "curative" | "palliative" | "adjuvant" | "continuous";
   supportiveCare: string[];
   monitoring: string[];
   notes: string[];
@@ -17,8 +21,10 @@ export interface TreatmentPlan {
 export function generateTreatmentPlan(
   ml: PrimaryPrediction,
   parsed: ParsedReport,
-  secondaryAnalyses: SecondaryAnalysis[] = []
+  secondaryAnalyses: SecondaryAnalysis[] = [],
+  lang: Lang = "en"
 ): TreatmentPlan {
+  const c = getTreatmentPlanContent(lang);
   const cancerType = ml.datasetCancerType || "";
   const stage = ml.datasetStage || "";
   const cycles = ml.predictedCycles || 0;
@@ -26,7 +32,7 @@ export function generateTreatmentPlan(
 
   const plan: TreatmentPlan = {
     drugs: [],
-    interval: "21 days",
+    interval: c.interval,
     duration: "",
     intent: "curative",
     supportiveCare: [],
@@ -42,165 +48,78 @@ export function generateTreatmentPlan(
 
   if (cancerType.includes("Breast Cancer")) {
     plan.intent = stage === "IV" ? "palliative" : "adjuvant";
-    plan.supportiveCare = [
-      "G-CSF (Filgrastim) support with dose-dense schedule",
-      "Antiemetic prophylaxis: 5-HT3 antagonist + NK1 antagonist + Dexamethasone",
-      "Cardiac monitoring (LVEF) with anthracycline-containing regimens",
-      "Herceptin (Trastuzumab) cardiac monitoring if HER2+",
-    ];
-    plan.monitoring = [
-      "CBC before each cycle",
-      "Liver function tests",
-      "Cardiac echo every 3 months (if anthracycline)",
-      "HER2/ER/PR reassessment if progression",
-    ];
+    plan.supportiveCare = [...c.breast.supportiveCare];
+    plan.monitoring = [...c.breast.monitoring];
 
     for (const sa of secondaryAnalyses) {
+      const n = c.breast.secondaryNotes;
       if (sa.canAvoidChemo) {
-        plan.notes.push("Genomic Risk Score: Low risk — chemotherapy safely avoided per Oncotype DX/MammaPrint");
-        plan.notes.push("Endocrine therapy alone is sufficient for this patient");
+        plan.notes.push(n.canAvoidChemo1, n.canAvoidChemo2);
       }
       if (sa.brcaResult === "Pathogenic mutation detected") {
-        plan.notes.push("BRCA1/BRCA2 mutation detected — PARP inhibitor (olaparib/talazoparib) eligible for metastatic disease");
-        plan.notes.push("Consider risk-reducing bilateral mastectomy and salpingo-oophorectomy");
+        plan.notes.push(n.brcaPositive1, n.brcaPositive2);
       }
       if (sa.nodalStatus === "Node-negative") {
-        plan.notes.push("Sentinel node biopsy: Node-negative — excellent prognosis");
-        plan.notes.push("Chemotherapy decision guided by genomic risk score and tumor size");
+        plan.notes.push(n.nodeNegative1, n.nodeNegative2);
       } else if (sa.nodalStatus === "Node-positive") {
-        plan.notes.push("Sentinel node biopsy: Node-positive — chemotherapy recommended");
-        plan.notes.push("Consider dose-dense regimen and extended nodal irradiation");
+        plan.notes.push(n.nodePositive1, n.nodePositive2);
       }
     }
   } else if (cancerType.includes("Lung Cancer")) {
     plan.intent = stage === "IV" ? "palliative" : stage === "I" ? "adjuvant" : "curative";
-    plan.supportiveCare = [
-      "Pneumocystis prophylaxis (if high-dose steroids)",
-      "Antiemetic prophylaxis",
-      "Pulmonary function monitoring",
-    ];
-    plan.monitoring = [
-      "CBC, CMP before each cycle",
-      "CT chest every 2-3 cycles",
-      "EGFR/ALK reassessment if progression",
-      "PD-L1 reassessment if considering immunotherapy",
-    ];
+    plan.supportiveCare = [...c.lung.supportiveCare];
+    plan.monitoring = [...c.lung.monitoring];
   } else if (cancerType.includes("Colorectal Cancer")) {
     plan.intent = stage === "IV" ? "palliative" : "adjuvant";
-    plan.supportiveCare = [
-      "Antiemetic prophylaxis",
-      "Peripheral neuropathy monitoring (oxaliplatin)",
-      "Diarrhea management (loperamide PRN)",
-    ];
-    plan.monitoring = [
-      "CBC, CMP before each cycle",
-      "CEA every 2-3 cycles",
-      "CT chest/abdomen/pelvis every 8-12 weeks",
-      "KRAS/NRAS/BRAF reassessment if progression",
-    ];
+    plan.supportiveCare = [...c.colorectal.supportiveCare];
+    plan.monitoring = [...c.colorectal.monitoring];
   } else if (
     cancerType.includes("Brain") ||
     cancerType.includes("Glioblastoma") ||
     cancerType.includes("Glioma")
   ) {
     plan.intent = "curative";
-    plan.supportiveCare = [
-      "Dexamethasone for cerebral edema",
-      "Antiepileptic prophylaxis (levetiracetam)",
-      "G-CSF support if concurrent RT",
-      "PJP prophylaxis if on prolonged steroids",
-    ];
-    plan.monitoring = [
-      "MRI brain every 2-3 months during treatment",
-      "Neurological assessment before each RT fraction",
-      "MGMT methylation status review",
-      "KPS/ECOG assessment before each cycle",
-    ];
-    plan.notes.push("Stupp Protocol: RT with concomitant temozolomide followed by adjuvant temozolomide");
+    plan.supportiveCare = [...c.brain.supportiveCare];
+    plan.monitoring = [...c.brain.monitoring];
+    plan.notes.push(c.brain.stuppNote);
     if (cancerType.includes("Glioblastoma")) {
-      plan.notes.push("Consider tumour treating fields (Optune) for eligible patients");
+      plan.notes.push(c.brain.optuneNote);
     }
   } else if (cancerType.includes("Lymphoma")) {
     plan.intent = "curative";
-    plan.supportiveCare = [
-      "Antiemetic prophylaxis",
-      "Tumor lysis syndrome prophylaxis (allopurinol/hydration)",
-      "HBV prophylaxis if HBsAg+ (rituximab-containing regimens)",
-    ];
-    plan.monitoring = [
-      "CBC, CMP before each cycle",
-      "PET-CT after cycle 2 (interim response assessment)",
-      "LDH monitoring",
-      "CD20 levels if rituximab-based regimen",
-    ];
+    plan.supportiveCare = [...c.lymphoma.supportiveCare];
+    plan.monitoring = [...c.lymphoma.monitoring];
   } else if (cancerType.includes("Leukemia")) {
     plan.intent = "curative";
-    plan.supportiveCare = [
-      "Tumor lysis syndrome prophylaxis (aggressive hydration + allopurinol)",
-      "Antiemetic prophylaxis",
-      "Antifungal prophylaxis (posaconazole during neutropenia)",
-      "Antiviral prophylaxis (acyclovir)",
-    ];
-    plan.monitoring = [
-      "CBC daily during induction",
-      "Bone marrow biopsy at day 14 and day 28",
-      "Cytogenetics/FISH monitoring",
-      "MRD (minimal residual disease) assessment post-consolidation",
-    ];
+    plan.supportiveCare = [...c.leukemia.supportiveCare];
+    plan.monitoring = [...c.leukemia.monitoring];
   } else if (cancerType.includes("Ovarian")) {
     plan.intent = "curative";
-    plan.supportiveCare = [
-      "Antiemetic prophylaxis",
-      "Peripheral neuropathy monitoring",
-      "Hypersensitivity reaction monitoring (carboplatin)",
-    ];
-    plan.monitoring = [
-      "CBC, CMP before each cycle",
-      "CA-125 every 3 cycles",
-      "CT chest/abdomen/pelvis post-completion",
-      "BRCA/HRD status review for maintenance therapy",
-    ];
+    plan.supportiveCare = [...c.ovarian.supportiveCare];
+    plan.monitoring = [...c.ovarian.monitoring];
   } else if (cancerType.includes("Pancreatic")) {
     plan.intent = stage === "IV" ? "palliative" : "curative";
-    plan.supportiveCare = [
-      "Antiemetic prophylaxis",
-      "Nutritional support (pancreatic enzyme replacement)",
-      "Diabetes management if new-onset",
-    ];
-    plan.monitoring = [
-      "CBC, CMP before each cycle",
-      "CA 19-9 every 2-3 cycles",
-      "CT pancreas protocol every 8-12 weeks",
-      "BRCA/PALB2 status review for olaparib eligibility",
-    ];
+    plan.supportiveCare = [...c.pancreatic.supportiveCare];
+    plan.monitoring = [...c.pancreatic.monitoring];
   } else if (cancerType.includes("Prostate")) {
     plan.intent = stage === "IV" ? "palliative" : "curative";
-    plan.supportiveCare = [
-      "Androgen deprivation therapy (ADT) coordination",
-      "Bone health management (zoledronic acid/denosumab)",
-      "Hot flash management",
-    ];
-    plan.monitoring = [
-      "PSA every 3 months",
-      "Bone scan if symptomatic progression",
-      "PSMA PET-CT for restaging",
-      "Testosterone levels (if on ADT)",
-    ];
+    plan.supportiveCare = [...c.prostate.supportiveCare];
+    plan.monitoring = [...c.prostate.monitoring];
   }
 
   if (cycles > 0) {
-    plan.duration = `${cycles * 3} weeks (${cycles} cycles × 21 days)`;
+    plan.duration = c.durationTemplate.replace("{weeks}", String(cycles * 3)).replace("{cycles}", String(cycles));
   } else if (cycles === 0) {
-    plan.duration = "Continuous / targeted therapy (no fixed cycles)";
+    plan.duration = c.durationContinuous;
   }
 
   const ps = parsed.performanceStatus;
   if (ps != null && ps >= 2) {
-    plan.notes.push("ECOG PS 2 — consider dose reduction (75-80% standard dose)");
+    plan.notes.push(c.generalNotes.ecogPs2);
   }
   const age = parsed.age;
   if (age != null && age > 70) {
-    plan.notes.push("Age >70 — consider geriatric assessment and dose adjustments");
+    plan.notes.push(c.generalNotes.ageOver70);
   }
 
   return plan;

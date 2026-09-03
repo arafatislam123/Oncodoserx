@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { CheckCircle2, FileText, Scale, Users } from "lucide-react";
 import { api, ApiError, type DashboardStats } from "@/lib/api";
+import { useLanguage } from "@/lib/i18n/context";
 
 export default function DashboardPage() {
+  const { t } = useLanguage();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -20,9 +22,9 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <span className="section-label">Overview</span>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-slate-500">Platform statistics and recent activity.</p>
+        <span className="section-label">{t("dashboard.eyebrow")}</span>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">{t("dashboard.title")}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t("dashboard.subtitle")}</p>
       </div>
 
       {loading && <StatSkeleton />}
@@ -33,10 +35,10 @@ export default function DashboardPage() {
 
       {stats && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Total Patients" value={stats.totalPatients} icon={Users} />
-          <StatCard label="Total Reports" value={stats.totalReports} icon={FileText} />
-          <StatCard label="Completed Reports" value={stats.completedReports} icon={CheckCircle2} />
-          <StatCard label="Average BMI" value={stats.avgBMI ?? "—"} icon={Scale} />
+          <StatCard label={t("dashboard.totalPatients")} value={stats.totalPatients} icon={Users} />
+          <StatCard label={t("dashboard.totalReports")} value={stats.totalReports} icon={FileText} />
+          <StatCard label={t("dashboard.completedReports")} value={stats.completedReports} icon={CheckCircle2} />
+          <StatCard label={t("dashboard.averageBmi")} value={stats.avgBMI ?? "—"} icon={Scale} />
         </div>
       )}
     </div>

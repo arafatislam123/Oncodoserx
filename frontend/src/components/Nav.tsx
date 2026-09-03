@@ -3,18 +3,21 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Activity, FolderOpen, LayoutDashboard, Ruler, Upload, Users } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/context";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const NAV_LINKS = [
-  { href: "/", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/dashboard", label: "Dashboard", icon: Activity, exact: true },
-  { href: "/patients", label: "Patients", icon: Users, exact: false },
-  { href: "/bsa", label: "BSA Calculator", icon: Ruler, exact: true },
-  { href: "/upload", label: "Upload", icon: Upload, exact: true },
-  { href: "/multi-upload", label: "Multi-Report Intake", icon: FolderOpen, exact: true },
+  { href: "/", key: "nav.overview" as const, icon: LayoutDashboard, exact: true },
+  { href: "/dashboard", key: "nav.dashboard" as const, icon: Activity, exact: true },
+  { href: "/patients", key: "nav.patients" as const, icon: Users, exact: false },
+  { href: "/bsa", key: "nav.bsa" as const, icon: Ruler, exact: true },
+  { href: "/upload", key: "nav.upload" as const, icon: Upload, exact: true },
+  { href: "/multi-upload", key: "nav.multiUpload" as const, icon: FolderOpen, exact: true },
 ];
 
 export function Nav() {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/85 backdrop-blur">
@@ -26,7 +29,7 @@ export function Nav() {
           <span className="leading-none">
             <span className="block text-[15px] font-semibold tracking-tight text-slate-900">OncoDoseRx</span>
             <span className="block text-[10.5px] font-medium uppercase tracking-wider text-slate-400">
-              Oncology Decision Support
+              {t("nav.tagline")}
             </span>
           </span>
         </Link>
@@ -43,10 +46,12 @@ export function Nav() {
                 }`}
               >
                 <Icon size={15} strokeWidth={2} />
-                {link.label}
+                {t(link.key)}
               </Link>
             );
           })}
+          <span className="mx-1 h-5 w-px bg-slate-200" />
+          <LanguageSwitcher />
         </nav>
       </div>
     </header>
